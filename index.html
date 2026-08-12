@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Добавлена иконка вкладки, чтобы не было ошибки 404 в консоли браузера -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
-<title>Управление клиентами и льготами</title>
+<title>Управление школьниками и льготами</title>
 <style>
 body {
 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -147,7 +147,7 @@ font-style: italic;
 <div class="container">
 <!-- Фрейм для ввода данных -->
 <div class="section">
-<div class="section-title">Добавление клиента</div>
+<div class="section-title">Добавление школьника</div>
 <div class="form-grid">
 <label for="name">Имя:</label>
 <input type="text" id="name" placeholder="Введите имя">
@@ -161,7 +161,7 @@ font-style: italic;
 <label for="lgota3">Льгота 3:</label>
 <input type="text" id="lgota3" placeholder="Введите значение (число)">
 
-<button class="btn-add" onclick="addClient()">Добавить клиента</button>
+<button class="btn-add" onclick="addClient()">Добавить школьника</button>
 </div>
 </div>
 
@@ -169,7 +169,7 @@ font-style: italic;
 <div class="section">
 <div class="section-title">Управление</div>
 <div class="controls">
-<button class="btn" onclick="updateCount()">Посчитать клиентов</button>
+<button class="btn" onclick="updateCount()">Посчитать школьников</button>
 <span class="count-label" id="countLabel">Всего: 0</span>
 
 <div class="separator"></div>
@@ -195,12 +195,12 @@ font-style: italic;
 <!-- Строки добавляются через JavaScript -->
 </tbody>
 </table>
-<div id="emptyMsg" class="empty-msg">Список клиентов пуст</div>
+<div id="emptyMsg" class="empty-msg">Список школьников пуст</div>
 </div>
 </div>
 
 <script>
-// Список клиентов
+// Список школьников
 let clients = [];
 
 // Получение элементов формы

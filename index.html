@@ -6,6 +6,10 @@
 <!-- Добавлена иконка вкладки, чтобы не было ошибки 404 в консоли браузера -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 <title>Управление школьниками и льготами</title>
+
+<!-- Подключаем библиотеку SheetJS для выгрузки в Excel -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
 <style>
 body {
 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -94,6 +98,16 @@ transition: all 0.2s;
 .btn:hover {
 background-color: #bdc3c7;
 }
+/* Немного выделяем кнопку Excel */
+.btn-excel {
+background-color: #27ae60;
+color: white;
+border-color: #219a52;
+}
+.btn-excel:hover {
+background-color: #219a52;
+}
+
 .count-label {
 font-weight: bold;
 font-size: 15px;
@@ -177,6 +191,11 @@ font-style: italic;
 <button class="btn" onclick="sortClients('lgota1')">Сорт. по Льготе 1</button>
 <button class="btn" onclick="sortClients('lgota2')">Сорт. по Льготе 2</button>
 <button class="btn" onclick="sortClients('lgota3')">Сорт. по Льготе 3</button>
+
+<div class="separator"></div>
+
+<!-- Новая кнопка выгрузки -->
+<button class="btn btn-excel" onclick="exportToExcel()">Выгрузить в Excel</button>
 </div>
 </div>
 
@@ -264,13 +283,11 @@ nameInput.focus();
 renderTable();
 }
 
-// ИСПРАВЛЕНО: добавлена недостающая обратная кавычка (`) в начале строки
 function updateCount() {
 countLabel.textContent = `Всего: ${clients.length}`;
 }
 
 function sortClients(attribute) {
-// Сортировка (строки по алфавиту, числа по порядку)
 clients.sort((a, b) => {
 if (typeof a[attribute] === 'string') {
 return a[attribute].localeCompare(b[attribute]);
@@ -289,11 +306,8 @@ emptyMsg.style.display = 'block';
 emptyMsg.style.display = 'none';
 }
 
-// ИСПРАВЛЕНО: заменены HTML-сущности на нормальные теги, добавлен $, добавлена недостающая Льгота 1
 for (let client of clients) {
 let row = document.createElement('tr');
-
-// Форматируем числа до 2 знаков после запятой
 row.innerHTML = `
 <td>${client.name}</td>
 <td>${client.lgota1.toFixed(2)}</td>
@@ -304,6 +318,44 @@ tableBody.appendChild(row);
 }
 
 updateCount();
+}
+
+// --- НОВАЯ ФУНКЦИЯ ВЫГРУЗКИ В EXCEL ---
+function exportToExcel() {
+if (clients.length === 0) {
+alert("Список школьников пуст. Нечего выгружать.");
+return;
+}
+
+// Подготавливаем данные в формате, понятном для Excel (массив объектов с нужными заголовками)
+const dataForExcel = clients.map(c => ({
+"Имя школьника": c.name,
+"Льгота 1": c.lgota1,
+"Льгота 2": c.lgota2,
+"Льгота 3": c.lgota3
+}));
+
+// Создаем новую книгу Excel
+const wb = XLSX.utils.book_new();
+
+// Создаем лист на основе наших данных
+const ws = XLSX.utils.json_to_sheet(dataForExcel);
+
+// (Опционально) Настраиваем ширину колонок для красоты
+ws['!cols'] = [
+{ wch: 25 }, // Ширина столбца "Имя"
+{ wch: 15 }, // Ширина "Льгота 1"
+{ wch: 15 }, // Ширина "Льгота 2"
+{ wch: 15 }  // Ширина "Льгота 3"
+];
+
+// Добавляем лист в книгу
+XLSX.utils.book_append_sheet(wb, ws, "Школьники");
+
+// Генерируем файл и вызываем окно сохранения. 
+// Внимание: браузер сам решит, куда сохранить файл (по умолчанию в "Загрузки").
+// Пользователю нужно будет выбрать "Рабочий стол" в окне сохранения.
+XLSX.writeFile(wb, "Школьники_и_льготы.xlsx");
 }
 
 // Первичная отрисовка

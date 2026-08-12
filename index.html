@@ -22,7 +22,7 @@ justify-content: center;
 
 .container {
 width: 100%;
-max-width: 700px;
+max-width: 800px; /* Немного увеличил для удобного размещения новых полей */
 background: #fff;
 border-radius: 10px;
 box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -122,6 +122,18 @@ transition: all 0.2s;
 background-color: #bdc3c7;
 }
 
+/* Стили для текстовых полей подсчета */
+.count-input {
+padding: 6px 10px;
+border: 1px solid #bdc3c7;
+border-radius: 4px;
+font-size: 13px;
+width: 200px;
+background-color: #f9f9f9;
+color: #2c3e50;
+outline: none;
+}
+
 /* Кнопка выгрузки (зеленая) */
 .btn-excel {
 background-color: #27ae60;
@@ -179,7 +191,7 @@ color: #2c3e50;
 
 th:nth-child(1), td:nth-child(1) { text-align: left; }
 th:nth-child(2), td:nth-child(2) { text-align: center; }
-th:nth-child(3), td:nth-child(3) { text-align: center; } /* Изменил на центр, так как значения 0 и 1 лучше смотрятся по центру */
+th:nth-child(3), td:nth-child(3) { text-align: center; }
 th:nth-child(4), td:nth-child(4) { text-align: center; }
 
 tr:hover {
@@ -225,9 +237,15 @@ font-style: italic;
 
 <div class="separator"></div>
 
-<button class="btn" onclick="sortClients('lgota1')">Сорт. по Льготе 1</button>
-<button class="btn" onclick="sortClients('lgota2')">Сорт. по Льготе 2</button>
-<button class="btn" onclick="sortClients('lgota3')">Сорт. по Льготе 3</button>
+<!-- Измененные кнопки и добавленные текстовые поля -->
+<button class="btn" onclick="countLgota(1)">Посчитать Льготу 1</button>
+<input type="text" id="countLgota1Field" class="count-input" readonly placeholder="количество школьников с льготой 1">
+
+<button class="btn" onclick="countLgota(2)">Посчитать Льготу 2</button>
+<input type="text" id="countLgota2Field" class="count-input" readonly placeholder="количество школьников с льготой 2">
+
+<button class="btn" onclick="countLgota(3)">Посчитать Льготу 3</button>
+<input type="text" id="countLgota3Field" class="count-input" readonly placeholder="количество школьников с льготой 3">
 
 <div class="separator"></div>
 
@@ -322,12 +340,13 @@ function updateCount() {
 countLabel.textContent = `Всего: ${clients.length}`;
 }
 
-function sortClients(attribute) {
-clients.sort((a, b) => {
-if (typeof a[attribute] === 'string') return a[attribute].localeCompare(b[attribute]);
-return a[attribute] - b[attribute];
-});
-renderTable();
+// Новая функция для подсчета льгот
+function countLgota(num) {
+    // Фильтруем массив, оставляя только тех, у кого нужная льгота равна 1, и берем длину
+    const count = clients.filter(client => client['lgota' + num] === 1).length;
+    
+    // Записываем результат в соответствующее текстовое поле
+    document.getElementById('countLgota' + num + 'Field').value = count;
 }
 
 function renderTable() {
@@ -336,7 +355,6 @@ emptyMsg.style.display = clients.length === 0 ? 'block' : 'none';
 
 for (let client of clients) {
 let row = document.createElement('tr');
-// Выводим просто 0 или 1 вместо .toFixed(2), так как теперь это целочисленные кнопки
 row.innerHTML = `
 <td>${client.name}</td>
 <td>${client.lgota1}</td>

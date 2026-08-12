@@ -264,8 +264,9 @@ nameInput.focus();
 renderTable();
 }
 
+// ИСПРАВЛЕНО: добавлена недостающая обратная кавычка (`) в начале строки
 function updateCount() {
-countLabel.textContent = Всего: ${clients.length}`;
+countLabel.textContent = `Всего: ${clients.length}`;
 }
 
 function sortClients(attribute) {
@@ -288,13 +289,15 @@ emptyMsg.style.display = 'block';
 emptyMsg.style.display = 'none';
 }
 
-// Отрисовка строк таблицы
+// ИСПРАВЛЕНО: заменены HTML-сущности на нормальные теги, добавлен $, добавлена недостающая Льгота 1
 for (let client of clients) {
 let row = document.createElement('tr');
 
 // Форматируем числа до 2 знаков после запятой
-row.innerHTML = &lt;td&gt;${client.name}</td>
-<td>{client.lgota2.toFixed(2)}</td>
+row.innerHTML = `
+<td>${client.name}</td>
+<td>${client.lgota1.toFixed(2)}</td>
+<td>${client.lgota2.toFixed(2)}</td>
 <td>${client.lgota3.toFixed(2)}</td>
 `;
 tableBody.appendChild(row);

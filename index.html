@@ -7,8 +7,8 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 <title>Управление школьниками и льготами</title>
 
-<!-- Подключаем библиотеку SheetJS для выгрузки в Excel -->
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<!-- ИСПРАВЛЕНО: Надежная ссылка на библиотеку SheetJS через cdnjs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
 body {
@@ -107,6 +107,10 @@ border-color: #219a52;
 .btn-excel:hover {
 background-color: #219a52;
 }
+.btn-excel:disabled {
+background-color: #95d5b2;
+cursor: not-allowed;
+}
 
 .count-label {
 font-weight: bold;
@@ -167,7 +171,7 @@ font-style: italic;
 <input type="text" id="name" placeholder="Введите имя">
 
 <label for="lgota1">Льгота 1:</label>
-<input type="text" id="lgota1" placeholder="Введите значение (число)">
+<input type="text" id="lgota1" placeholder="Введите (число)">
 
 <label for="lgota2">Льгота 2:</label>
 <input type="text" id="lgota2" placeholder="Введите значение (число)">
@@ -195,7 +199,7 @@ font-style: italic;
 <div class="separator"></div>
 
 <!-- Новая кнопка выгрузки -->
-<button class="btn btn-excel" onclick="exportToExcel()">Выгрузить в Excel</button>
+<button class="btn btn-excel" id="exportBtn" onclick="exportToExcel()">Выгрузить в Excel</button>
 </div>
 </div>
 
@@ -320,14 +324,22 @@ tableBody.appendChild(row);
 updateCount();
 }
 
-// --- НОВАЯ ФУНКЦИЯ ВЫГРУЗКИ В EXCEL ---
+// --- ИСПРАВЛЕННАЯ ФУНКЦИЯ ВЫГРУЗКИ В EXCEL ---
 function exportToExcel() {
+const btn = document.getElementById('exportBtn');
+const originalText = btn.innerText;
+
 if (clients.length === 0) {
 alert("Список школьников пуст. Нечего выгружать.");
 return;
 }
 
-// Подготавливаем данные в формате, понятном для Excel (массив объектов с нужными заголовками)
+// Добавляем защиту от ошибок и визуальный отклик для пользователя
+try {
+btn.innerText = 'Формирование...';
+btn.disabled = true;
+
+// Подготавливаем данные
 const dataForExcel = clients.map(c => ({
 "Имя школьника": c.name,
 "Льгота 1": c.lgota1,
@@ -335,27 +347,31 @@ const dataForExcel = clients.map(c => ({
 "Льгота 3": c.lgota3
 }));
 
-// Создаем новую книгу Excel
+// Создаем книгу и лист
 const wb = XLSX.utils.book_new();
-
-// Создаем лист на основе наших данных
 const ws = XLSX.utils.json_to_sheet(dataForExcel);
 
-// (Опционально) Настраиваем ширину колонок для красоты
+// Настраиваем ширину колонок
 ws['!cols'] = [
-{ wch: 25 }, // Ширина столбца "Имя"
-{ wch: 15 }, // Ширина "Льгота 1"
-{ wch: 15 }, // Ширина "Льгота 2"
-{ wch: 15 }  // Ширина "Льгота 3"
+{ wch: 25 }, 
+{ wch: 15 }, 
+{ wch: 15 }, 
+{ wch: 15 }  
 ];
 
-// Добавляем лист в книгу
 XLSX.utils.book_append_sheet(wb, ws, "Школьники");
 
-// Генерируем файл и вызываем окно сохранения. 
-// Внимание: браузер сам решит, куда сохранить файл (по умолчанию в "Загрузки").
-// Пользователю нужно будет выбрать "Рабочий стол" в окне сохранения.
+// Вызываем сохранение
 XLSX.writeFile(wb, "Школьники_и_льготы.xlsx");
+
+} catch (error) {
+console.error("Ошибка при выгрузке Excel:", error);
+alert("Произошла ошибка при выгрузке файла. Библиотека可能 не загружена.");
+} finally {
+// Возвращаем кнопку в исходное состояние в любом случае
+btn.innerText = originalText;
+btn.disabled = false;
+}
 }
 
 // Первичная отрисовка

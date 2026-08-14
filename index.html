@@ -28,9 +28,10 @@
   --purple-dim: rgba(167,139,250,0.12);
   --blue: #60a5fa;
   --blue-dim: rgba(96,165,250,0.12);
+  --orange: #f97316;
+  --orange-dim: rgba(249,115,22,0.12);
   --radius: 10px;
   --shadow: 0 4px 24px rgba(0,0,0,0.3);
-  /* ScrollBox переменные */
   --sb-item-h: 36px;
   --sb-visible: 3;
   --sb-h: calc(var(--sb-item-h) * var(--sb-visible));
@@ -126,7 +127,7 @@ body::after {
 /* Статистика */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -161,6 +162,7 @@ body::after {
 .stat-tile.mnogodet .stat-num { color: var(--warn); }
 .stat-tile.ovz .stat-num { color: var(--purple); }
 .stat-tile.maloim .stat-num { color: var(--blue); }
+.stat-tile.lgota .stat-num { color: var(--orange); }
 
 /* Форма */
 .form-grid {
@@ -194,7 +196,6 @@ body::after {
   color: #555a72;
 }
 
-/* Кнопки-категории */
 .btn-cat {
   padding: 9px 16px;
   background: var(--danger-dim);
@@ -239,7 +240,7 @@ body::after {
 }
 .btn-add:active { transform: translateY(0); }
 
-/* ========== ScrollBox (барабанный селектор) ========== */
+/* ========== ScrollBox ========== */
 .scrollbox-full-row {
   grid-column: 1 / -1;
   display: flex;
@@ -276,7 +277,6 @@ body::after {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-dim);
 }
-/* Затухание сверху и снизу */
 .scrollbox-wrapper::before,
 .scrollbox-wrapper::after {
   content: '';
@@ -294,7 +294,6 @@ body::after {
   bottom: 0;
   background: linear-gradient(to top, var(--bg2) 30%, transparent 100%);
 }
-/* Центральная линия выделения */
 .scrollbox-highlight {
   position: absolute;
   top: 50%;
@@ -307,7 +306,6 @@ body::after {
   pointer-events: none;
   z-index: 1;
 }
-/* Скроллируемая лента */
 .scrollbox-track {
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -674,6 +672,10 @@ tbody tr { animation: rowIn 0.25s ease; }
       <div class="stat-num" id="statMaloim">0</div>
       <div class="stat-label">Малоимущие</div>
     </div>
+    <div class="stat-tile lgota">
+      <div class="stat-num" id="statLgota">0</div>
+      <div class="stat-label">С льготой</div>
+    </div>
   </div>
 
   <!-- Форма добавления -->
@@ -687,7 +689,6 @@ tbody tr { animation: rowIn 0.25s ease; }
         <label for="surname">Фамилия:</label>
         <input type="text" id="surname" placeholder="Введите фамилию" autocomplete="off">
 
-        <!-- ScrollBox: Класс и Буква -->
         <div class="scrollbox-full-row">
           <div class="scrollbox-group">
             <label>Класс</label>
@@ -806,24 +807,17 @@ tbody tr { animation: rowIn 0.25s ease; }
 </div>
 
 <script>
-// ============================
-// Данные
-// ============================
 var clients = [];
 var formState = { svo: 0, mnogodet: 0, ovz: 0, maloim: 0 };
 var STORAGE_KEY = 'pitaniye1_data';
 
-// ============================
-// ScrollBox — конфигурация
-// ============================
 var SB_ITEM_H = 36;
 var SB_VISIBLE = 3;
-var SB_HALF = Math.floor(SB_VISIBLE / 2); // = 1
+var SB_HALF = Math.floor(SB_VISIBLE / 2);
 
 var classItems = ['1','2','3','4','5','6','7','8','9','10','11'];
 var letterItems = ['А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М'];
 
-// Состояния пикеров
 function createState(items) {
   return {
     items: items,
@@ -844,11 +838,7 @@ function createState(items) {
 var classState = createState(classItems);
 var letterState = createState(letterItems);
 
-// ============================
-// ScrollBox — механика
-// ============================
 function initPicker(trackEl, wrapperEl, state) {
-  // Создание элементов ленты
   for (var i = 0; i < state.items.length; i++) {
     var div = document.createElement('div');
     div.className = 'scrollbox-item';
@@ -861,7 +851,6 @@ function initPicker(trackEl, wrapperEl, state) {
   setIndex(state, 0, false);
   updateVisual(state);
 
-  // --- Мышь ---
   wrapperEl.addEventListener('mousedown', function(e) {
     e.preventDefault();
     startDrag(e.clientY, state, wrapperEl);
@@ -873,7 +862,6 @@ function initPicker(trackEl, wrapperEl, state) {
     if (state.dragging) endDrag(state);
   });
 
-  // --- Тач ---
   wrapperEl.addEventListener('touchstart', function(e) {
     e.preventDefault();
     startDrag(e.touches[0].clientY, state, wrapperEl);
@@ -886,7 +874,6 @@ function initPicker(trackEl, wrapperEl, state) {
     if (state.dragging) endDrag(state);
   });
 
-  // --- Колёсико ---
   wrapperEl.addEventListener('wheel', function(e) {
     e.preventDefault();
     var delta = e.deltaY > 0 ? 1 : -1;
@@ -895,7 +882,6 @@ function initPicker(trackEl, wrapperEl, state) {
     startSnapAnimation(state);
   }, { passive: false });
 
-  // --- Клик по элементу ---
   wrapperEl.addEventListener('click', function(e) {
     if (state.dragging) return;
     var item = e.target.closest('.scrollbox-item');
@@ -932,7 +918,6 @@ function moveDrag(clientY, state) {
   var diff = clientY - state.startY;
   state.offsetY = state.startOffsetY + diff;
 
-  // Резинка
   var minY = -(state.items.length - 1) * SB_ITEM_H;
   if (state.offsetY > 0) {
     state.offsetY *= 0.3;
@@ -1046,20 +1031,15 @@ function updateVisual(state) {
     }
   }
 
-  // Обновить индекс
   var raw = -state.offsetY / SB_ITEM_H;
   var idx = Math.round(Math.max(0, Math.min(state.items.length - 1, raw)));
   state.index = idx;
 }
 
-// Получить текущее выбранное значение
 function getPickerValue(state) {
   return state.items[state.index];
 }
 
-// ============================
-// Инициализация пикеров
-// ============================
 initPicker(
   document.getElementById('classTrack'),
   document.getElementById('classPicker'),
@@ -1071,16 +1051,12 @@ initPicker(
   letterState
 );
 
-// ============================
-// Инициализация приложения
-// ============================
 (function init() {
   try {
     var saved = localStorage.getItem(STORAGE_KEY);
     if (saved) clients = JSON.parse(saved);
   } catch(e) { clients = []; }
 
-  // Миграция: добавить поля klass/letter если их нет у старых записей
   for (var i = 0; i < clients.length; i++) {
     if (clients[i].klass === undefined) clients[i].klass = '';
     if (clients[i].letter === undefined) clients[i].letter = '';
@@ -1094,9 +1070,6 @@ function saveData() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(clients)); } catch(e) {}
 }
 
-// ============================
-// Тосты
-// ============================
 function showToast(message, type) {
   type = type || 'success';
   var container = document.getElementById('toastContainer');
@@ -1111,9 +1084,6 @@ function showToast(message, type) {
   }, 2800);
 }
 
-// ============================
-// Модалка
-// ============================
 var modalCallback = null;
 function showModal(title, text, onConfirm) {
   document.getElementById('modalTitle').textContent = title;
@@ -1136,9 +1106,6 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeModal();
 });
 
-// ============================
-// Переключение категорий
-// ============================
 function toggleCat(prop, btnId) {
   formState[prop] = formState[prop] === 0 ? 1 : 0;
   var btn = document.getElementById(btnId);
@@ -1151,9 +1118,6 @@ function toggleCat(prop, btnId) {
   }
 }
 
-// ============================
-// Добавление ученика
-// ============================
 function addClient() {
   var surname = document.getElementById('surname').value.trim();
   if (!surname) {
@@ -1182,7 +1146,6 @@ function addClient() {
     maloim: formState.maloim
   });
 
-  // Сброс
   document.getElementById('surname').value = '';
   formState = { svo: 0, mnogodet: 0, ovz: 0, maloim: 0 };
   document.querySelectorAll('.btn-cat').forEach(function(btn) {
@@ -1196,9 +1159,6 @@ function addClient() {
   document.getElementById('surname').focus();
 }
 
-// ============================
-// Удаление
-// ============================
 function deleteClient(index) {
   var c = clients[index];
   var name = c.klass + c.letter + ' ' + c.surname;
@@ -1223,20 +1183,18 @@ function confirmClearAll() {
   });
 }
 
-// ============================
-// Статистика
-// ============================
 function updateStats() {
   document.getElementById('statTotal').textContent = clients.length;
   document.getElementById('statSvo').textContent = clients.filter(function(c) { return c.svo === 1; }).length;
   document.getElementById('statMnogodet').textContent = clients.filter(function(c) { return c.mnogodet === 1; }).length;
   document.getElementById('statOvz').textContent = clients.filter(function(c) { return c.ovz === 1; }).length;
   document.getElementById('statMaloim').textContent = clients.filter(function(c) { return c.maloim === 1; }).length;
+  // Количество школьников с хотя бы одной льготой
+  document.getElementById('statLgota').textContent = clients.filter(function(c) {
+    return c.svo === 1 || c.mnogodet === 1 || c.ovz === 1 || c.maloim === 1;
+  }).length;
 }
 
-// ============================
-// Бейджи
-// ============================
 function badgeHTML(val) {
   if (val === 1) return '<span class="badge badge-yes">Да</span>';
   return '<span class="badge-no">&mdash;</span>';
@@ -1251,9 +1209,6 @@ function letterBadge(val) {
   return '<span class="badge-no">&mdash;</span>';
 }
 
-// ============================
-// Рендер таблицы
-// ============================
 function renderTable() {
   var tbody = document.getElementById('tableBody');
   var emptyMsg = document.getElementById('emptyMsg');
@@ -1308,14 +1263,10 @@ function escapeHTML(str) {
   return div.innerHTML;
 }
 
-// Enter для добавления
 document.getElementById('surname').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') addClient();
 });
 
-// ============================
-// Импорт из Excel
-// ============================
 function importFromExcel(event) {
   var file = event.target.files[0];
   if (!file) return;
@@ -1349,7 +1300,6 @@ function importFromExcel(event) {
         var klass = (row['класс'] || '').toString().trim();
         var letter = (row['буква'] || '').toString().trim().toUpperCase();
 
-        // Нормализация: если класс передан числом
         var klassNum = parseInt(klass, 10);
         if (!isNaN(klassNum) && klassNum >= 1 && klassNum <= 11) klass = String(klassNum);
 
@@ -1381,9 +1331,6 @@ function importFromExcel(event) {
   event.target.value = '';
 }
 
-// ============================
-// Экспорт в Excel
-// ============================
 function exportToExcel() {
   var btn = document.getElementById('exportBtn');
   if (clients.length === 0) {

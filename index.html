@@ -768,7 +768,6 @@ tbody tr { animation: rowIn 0.25s ease; }
     </div>
     <div class="class-filter-bar" id="classFilterBar">
       <span class="class-filter-label"><i class="fa-solid fa-filter" style="margin-right:5px;opacity:0.6"></i>Класс:</span>
-      <!-- Кнопки 1–11 генерируются в JS -->
       <button class="class-filter-reset" id="classFilterReset" onclick="resetClassFilter()">
         <i class="fa-solid fa-rotate-left" style="margin-right:3px"></i> Сброс
       </button>
@@ -914,9 +913,8 @@ var STORAGE_KEY = 'pitaniye1_data';
 // ============================
 // Фильтр по классам для статистики
 // ============================
-var classFilter = {}; // { "1": true, "5": true, ... }
+var classFilter = {};
 
-// Генерация кнопок фильтра
 (function buildClassFilter() {
   var bar = document.getElementById('classFilterBar');
   var resetBtn = document.getElementById('classFilterReset');
@@ -928,19 +926,18 @@ var classFilter = {}; // { "1": true, "5": true, ... }
     btn.setAttribute('role', 'checkbox');
     btn.setAttribute('aria-checked', 'false');
     btn.setAttribute('aria-label', 'Класс ' + n);
-      btn.addEventListener('click', function() {
-        var k = this.dataset.klass;
-        if (classFilter[k]) {
-          delete classFilter[k];
-          this.classList.remove('active');
-          this.setAttribute('aria-checked', 'false');
-        } else {
-          classFilter[k] = true;
-          this.classList.add('active');
-          this.setAttribute('aria-checked', 'true');
-        }
-        updateStats();
-      });
+    btn.addEventListener('click', function() {
+      var k = this.dataset.klass;
+      if (classFilter[k]) {
+        delete classFilter[k];
+        this.classList.remove('active');
+        this.setAttribute('aria-checked', 'false');
+      } else {
+        classFilter[k] = true;
+        this.classList.add('active');
+        this.setAttribute('aria-checked', 'true');
+      }
+      updateStats();
     });
     bar.insertBefore(btn, resetBtn);
   }
@@ -956,8 +953,6 @@ function resetClassFilter() {
   updateStats();
 }
 
-// Возвращает массив клиентов, прошедших фильтр по классу.
-// Если ни один чекбокс не отмечен — возвращает всех.
 function getFilteredForStats() {
   var keys = Object.keys(classFilter);
   if (keys.length === 0) return clients;

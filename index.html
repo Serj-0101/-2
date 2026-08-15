@@ -18,7 +18,7 @@ body::after{content:'';position:fixed;bottom:-30%;right:-10%;width:500px;height:
 .header{text-align:center;margin-bottom:24px;}
 .header h1{font-size:28px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .header p{color:var(--fg-muted);font-size:14px;margin-top:4px;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;transition:border-color 0.3s;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:visible;transition:border-color 0.3s;}
 .card:hover{border-color:#3a3f58;}
 .card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
 .card-header i{color:var(--accent);font-size:16px;}
@@ -163,17 +163,21 @@ tr.row-removing{animation:rowOut 0.4s ease forwards;overflow:hidden;pointer-even
 @keyframes chipFlash{0%{transform:scale(1);}30%{transform:scale(1.12);border-color:var(--accent);}100%{transform:scale(1);}}
 .form-stat-chip.flash{animation:chipFlash 0.4s ease;}
 
-/* ===== Спойлер для панели добавления ===== */
+/* ===== Спойлер ===== */
 .spoiler-card .card-header{cursor:pointer;user-select:none;-webkit-user-select:none;transition:background 0.2s;}
 .spoiler-card .card-header:hover{background:rgba(255,255,255,0.02);}
 .spoiler-chevron{margin-left:auto;font-size:13px;color:var(--fg-muted);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1),color 0.2s;order:10;}
 .spoiler-card.open .spoiler-chevron{transform:rotate(180deg);color:var(--accent);}
-.spoiler-body{overflow:hidden;max-height:0;opacity:0;transition:max-height 0.45s cubic-bezier(0.4,0,0.2,1),opacity 0.3s ease,padding 0.35s ease;padding-top:0;padding-bottom:0;border-bottom:1px solid transparent;}
-.spoiler-card.open .spoiler-body{max-height:700px;opacity:1;padding:20px;border-bottom-color:var(--border);}
+.spoiler-body-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows 0.45s cubic-bezier(0.4,0,0.2,1);}
+.spoiler-card.open .spoiler-body-wrap{grid-template-rows:1fr;}
+.spoiler-body-inner{overflow:hidden;transition:overflow 0s 0.45s;}
+.spoiler-card.open .spoiler-body-inner{overflow:visible;transition:overflow 0s 0s;}
+.spoiler-body{padding:0 20px;border-top:1px solid transparent;transition:padding 0.35s ease,border-color 0.35s ease;}
+.spoiler-card.open .spoiler-body{padding:20px;border-top-color:var(--border);}
 .spoiler-hint{font-size:11px;color:var(--fg-muted);font-weight:400;margin-left:8px;opacity:0.6;transition:opacity 0.2s;}
 .spoiler-card .card-header:hover .spoiler-hint{opacity:1;}
 
-@media(max-width:768px){.stats-row{grid-template-columns:repeat(3,1fr);}.form-grid{grid-template-columns:1fr;gap:8px;}.form-grid>label{text-align:left;}.controls{gap:6px;}.search-box{margin-left:0;width:100%;margin-top:6px;}.search-box input{width:100%;}.search-box input:focus{width:100%;}.header h1{font-size:22px;}.scrollbox-full-row{flex-direction:column;gap:12px;}.class-filter-bar{gap:6px;}.class-filter-btn{width:32px;height:32px;font-size:13px;}.cat-date-row{flex-direction:column;align-items:flex-start;gap:8px;}.form-stats-row{gap:6px;padding:8px 10px;}.form-stat-chip{padding:4px 8px;font-size:10px;}.form-stat-chip .chip-num{font-size:13px;}.spoiler-card.open .spoiler-body{max-height:900px;}}
+@media(max-width:768px){.stats-row{grid-template-columns:repeat(3,1fr);}.form-grid{grid-template-columns:1fr;gap:8px;}.form-grid>label{text-align:left;}.controls{gap:6px;}.search-box{margin-left:0;width:100%;margin-top:6px;}.search-box input{width:100%;}.search-box input:focus{width:100%;}.header h1{font-size:22px;}.scrollbox-full-row{flex-direction:column;gap:12px;}.class-filter-bar{gap:6px;}.class-filter-btn{width:32px;height:32px;font-size:13px;}.cat-date-row{flex-direction:column;align-items:flex-start;gap:8px;}.form-stats-row{gap:6px;padding:8px 10px;}.form-stat-chip{padding:4px 8px;font-size:10px;}.form-stat-chip .chip-num{font-size:13px;}}
 @media(max-width:480px){.stats-row{grid-template-columns:repeat(2,1fr);}body{padding:12px;}.class-filter-btn{width:28px;height:28px;font-size:12px;border-radius:6px;}.class-filter-btn.active::after{font-size:6px;top:2px;right:2px;}}
 </style>
 </head>
@@ -199,7 +203,6 @@ tr.row-removing{animation:rowOut 0.4s ease forwards;overflow:hidden;pointer-even
     </div>
   </div>
 
-  <!-- Панель добавления ученика — под спойлером -->
   <div class="card spoiler-card" id="addStudentCard">
     <div class="card-header" onclick="toggleSpoiler()" role="button" aria-expanded="false" aria-controls="addStudentBody" tabindex="0">
       <i class="fa-solid fa-user-plus"></i>
@@ -207,37 +210,41 @@ tr.row-removing{animation:rowOut 0.4s ease forwards;overflow:hidden;pointer-even
       <span class="spoiler-hint">нажмите, чтобы развернуть</span>
       <i class="fa-solid fa-chevron-down spoiler-chevron"></i>
     </div>
-    <div class="spoiler-body" id="addStudentBody">
-      <div class="form-grid">
-        <label for="surname">Фамилия:</label>
-        <input type="text" id="surname" placeholder="Введите фамилию" autocomplete="off">
-        <div class="scrollbox-full-row">
-          <div class="scrollbox-group"><label>Класс</label><div class="scrollbox-wrapper" id="classPicker" role="listbox" aria-label="Выбор класса"><div class="scrollbox-highlight"></div><div class="scrollbox-track" id="classTrack"></div></div></div>
-          <div class="scrollbox-group"><label>Буква</label><div class="scrollbox-wrapper" id="letterPicker" role="listbox" aria-label="Выбор буквы класса"><div class="scrollbox-highlight"></div><div class="scrollbox-track" id="letterTrack"></div></div></div>
+    <div class="spoiler-body-wrap">
+      <div class="spoiler-body-inner">
+        <div class="spoiler-body" id="addStudentBody">
+          <div class="form-grid">
+            <label for="surname">Фамилия:</label>
+            <input type="text" id="surname" placeholder="Введите фамилию" autocomplete="off">
+            <div class="scrollbox-full-row">
+              <div class="scrollbox-group"><label>Класс</label><div class="scrollbox-wrapper" id="classPicker" role="listbox" aria-label="Выбор класса"><div class="scrollbox-highlight"></div><div class="scrollbox-track" id="classTrack"></div></div></div>
+              <div class="scrollbox-group"><label>Буква</label><div class="scrollbox-wrapper" id="letterPicker" role="listbox" aria-label="Выбор буквы класса"><div class="scrollbox-highlight"></div><div class="scrollbox-track" id="letterTrack"></div></div></div>
+            </div>
+            <label>СВО:</label>
+            <button type="button" class="btn-cat" id="btnSvo" onclick="toggleCat('svo','btnSvo')"><i class="fa-solid fa-xmark"></i> Нет</button>
+            <label>Многодетные:</label>
+            <button type="button" class="btn-cat" id="btnMnogodet" onclick="toggleCat('mnogodet','btnMnogodet')"><i class="fa-solid fa-xmark"></i> Нет</button>
+            <label>ОВЗ:</label>
+            <div class="cat-date-row">
+              <button type="button" class="btn-cat" id="btnOvz" onclick="toggleCat('ovz','btnOvz')"><i class="fa-solid fa-xmark"></i> Нет</button>
+              <div class="date-field-group" id="ovzDateGroup"><span class="date-field-label">действует до</span><input type="date" class="date-field-input" id="ovzDateInput" onchange="handleDateChange('ovz',this.value)"></div>
+            </div>
+            <label>Малоимущие:</label>
+            <div class="cat-date-row">
+              <button type="button" class="btn-cat" id="btnMaloim" onclick="toggleCat('maloim','btnMaloim')"><i class="fa-solid fa-xmark"></i> Нет</button>
+              <div class="date-field-group" id="maloimDateGroup"><span class="date-field-label">действует до</span><input type="date" class="date-field-input" id="maloimDateInput" onchange="handleDateChange('maloim',this.value)"></div>
+            </div>
+            <div class="form-stats-row" id="formStatsRow">
+              <div class="form-stat-chip cs-total"><span class="chip-num" id="fStatTotal">0</span> Всего</div>
+              <div class="form-stat-chip cs-svo"><span class="chip-num" id="fStatSvo">0</span> СВО</div>
+              <div class="form-stat-chip cs-mnogodet"><span class="chip-num" id="fStatMnogodet">0</span> Многод.</div>
+              <div class="form-stat-chip cs-ovz"><span class="chip-num" id="fStatOvz">0</span> ОВЗ</div>
+              <div class="form-stat-chip cs-maloim"><span class="chip-num" id="fStatMaloim">0</span> Малоим.</div>
+              <div class="form-stat-chip cs-lgota"><span class="chip-num" id="fStatLgota">0</span> Льгота</div>
+            </div>
+            <button class="btn-add" onclick="addClient()"><i class="fa-solid fa-plus"></i> Добавить ученика</button>
+          </div>
         </div>
-        <label>СВО:</label>
-        <button type="button" class="btn-cat" id="btnSvo" onclick="toggleCat('svo','btnSvo')"><i class="fa-solid fa-xmark"></i> Нет</button>
-        <label>Многодетные:</label>
-        <button type="button" class="btn-cat" id="btnMnogodet" onclick="toggleCat('mnogodet','btnMnogodet')"><i class="fa-solid fa-xmark"></i> Нет</button>
-        <label>ОВЗ:</label>
-        <div class="cat-date-row">
-          <button type="button" class="btn-cat" id="btnOvz" onclick="toggleCat('ovz','btnOvz')"><i class="fa-solid fa-xmark"></i> Нет</button>
-          <div class="date-field-group" id="ovzDateGroup"><span class="date-field-label">действует до</span><input type="date" class="date-field-input" id="ovzDateInput" onchange="handleDateChange('ovz',this.value)"></div>
-        </div>
-        <label>Малоимущие:</label>
-        <div class="cat-date-row">
-          <button type="button" class="btn-cat" id="btnMaloim" onclick="toggleCat('maloim','btnMaloim')"><i class="fa-solid fa-xmark"></i> Нет</button>
-          <div class="date-field-group" id="maloimDateGroup"><span class="date-field-label">действует до</span><input type="date" class="date-field-input" id="maloimDateInput" onchange="handleDateChange('maloim',this.value)"></div>
-        </div>
-        <div class="form-stats-row" id="formStatsRow">
-          <div class="form-stat-chip cs-total"><span class="chip-num" id="fStatTotal">0</span> Всего</div>
-          <div class="form-stat-chip cs-svo"><span class="chip-num" id="fStatSvo">0</span> СВО</div>
-          <div class="form-stat-chip cs-mnogodet"><span class="chip-num" id="fStatMnogodet">0</span> Многод.</div>
-          <div class="form-stat-chip cs-ovz"><span class="chip-num" id="fStatOvz">0</span> ОВЗ</div>
-          <div class="form-stat-chip cs-maloim"><span class="chip-num" id="fStatMaloim">0</span> Малоим.</div>
-          <div class="form-stat-chip cs-lgota"><span class="chip-num" id="fStatLgota">0</span> Льгота</div>
-        </div>
-        <button class="btn-add" onclick="addClient()"><i class="fa-solid fa-plus"></i> Добавить ученика</button>
       </div>
     </div>
   </div>
@@ -296,39 +303,14 @@ function toggleSpoiler(){
   var card=document.getElementById('addStudentCard');
   var header=card.querySelector('.card-header');
   _spoilerOpen=!_spoilerOpen;
-  if(_spoilerOpen){
-    card.classList.add('open');
-    header.setAttribute('aria-expanded','true');
-    /* Фокус на поле «Фамилия» после раскрытия */
-    setTimeout(function(){document.getElementById('surname').focus();},350);
-  }else{
-    card.classList.remove('open');
-    header.setAttribute('aria-expanded','false');
-  }
+  if(_spoilerOpen){card.classList.add('open');header.setAttribute('aria-expanded','true');setTimeout(function(){document.getElementById('surname').focus();},350);}
+  else{card.classList.remove('open');header.setAttribute('aria-expanded','false');}
 }
-/* Поддержка Enter/Space для доступности */
-document.getElementById('addStudentCard').querySelector('.card-header').addEventListener('keydown',function(e){
-  if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleSpoiler();}
-});
+document.getElementById('addStudentCard').querySelector('.card-header').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleSpoiler();}});
 
 /* ===== Проверки дат ===== */
-function isDateExpired(isoDate){
-  if(!isoDate)return false;
-  var today=new Date();today.setHours(0,0,0,0);
-  var p=isoDate.split('-');
-  var d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10),0,0,0,0);
-  return d<today;
-}
-function isDateNearExpiry(isoDate){
-  if(!isoDate)return false;
-  if(isDateExpired(isoDate))return false;
-  var today=new Date();today.setHours(0,0,0,0);
-  var p=isoDate.split('-');
-  var d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10),0,0,0,0);
-  var diffMs=d.getTime()-today.getTime();
-  var oneMonthMs=30*24*60*60*1000;
-  return diffMs>0&&diffMs<oneMonthMs;
-}
+function isDateExpired(isoDate){if(!isoDate)return false;var today=new Date();today.setHours(0,0,0,0);var p=isoDate.split('-');var d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10),0,0,0,0);return d<today;}
+function isDateNearExpiry(isoDate){if(!isoDate)return false;if(isDateExpired(isoDate))return false;var today=new Date();today.setHours(0,0,0,0);var p=isoDate.split('-');var d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10),0,0,0,0);var diffMs=d.getTime()-today.getTime();var oneMonthMs=30*24*60*60*1000;return diffMs>0&&diffMs<oneMonthMs;}
 
 /* ===== Фильтр по классам ===== */
 var classFilter={};
@@ -370,83 +352,87 @@ function closeModal(){document.getElementById('modalOverlay').classList.remove('
 document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&_editingIndex<0)closeModal();});
 
-/* ===== Переключение категорий в форме ===== */
+/* ===== Переключение категорий ===== */
 function toggleCat(prop,btnId){formState[prop]=formState[prop]===0?1:0;var btn=document.getElementById(btnId);if(formState[prop]===1){btn.innerHTML='<i class="fa-solid fa-check"></i> Да';btn.classList.add('active');}else{btn.innerHTML='<i class="fa-solid fa-xmark"></i> Нет';btn.classList.remove('active');}if(prop==='ovz'){var g=document.getElementById('ovzDateGroup'),inp=document.getElementById('ovzDateInput');if(formState.ovz===1){g.classList.add('enabled');inp.removeAttribute('disabled');}else{g.classList.remove('enabled');inp.setAttribute('disabled','disabled');inp.value='';formState.ovzDate='';}}if(prop==='maloim'){var g2=document.getElementById('maloimDateGroup'),inp2=document.getElementById('maloimDateInput');if(formState.maloim===1){g2.classList.add('enabled');inp2.removeAttribute('disabled');}else{g2.classList.remove('enabled');inp2.setAttribute('disabled','disabled');inp2.value='';formState.maloimDate='';}}}
 function handleDateChange(prop,value){formState[prop+'Date']=value||'';}
 document.getElementById('ovzDateInput').setAttribute('disabled','disabled');
 document.getElementById('maloimDateInput').setAttribute('disabled','disabled');
 
 /* ===== Проверка дат ===== */
-function checkDates(type){
-  _datesChecked=true;
-  var expired=[],nearExpiry=[];
-  for(var i=0;i<clients.length;i++){
-    var c=clients[i];
-    if(type==='ovz'&&c.ovz===1){
-      if(isDateExpired(c.ovzDate))expired.push(c.klass+c.letter+' '+c.surname);
-      else if(isDateNearExpiry(c.ovzDate))nearExpiry.push(c.klass+c.letter+' '+c.surname);
-    }
-    if(type==='maloim'&&c.maloim===1){
-      if(isDateExpired(c.maloimDate))expired.push(c.klass+c.letter+' '+c.surname);
-      else if(isDateNearExpiry(c.maloimDate))nearExpiry.push(c.klass+c.letter+' '+c.surname);
-    }
-  }
-  renderTable();
-  var label=type==='ovz'?'ОВЗ':'Малоимущие';
-  var msg='';
-  if(expired.length>0)msg+='<div style="margin-bottom:6px"><b style="color:#ff6b6b">Просрочено ('+expired.length+'):</b> '+expired.join(', ')+'</div>';
-  if(nearExpiry.length>0)msg+='<div><b style="color:#ffc857">Истекает менее чем через месяц ('+nearExpiry.length+'):</b> '+nearExpiry.join(', ')+'</div>';
-  if(!msg)msg=label+': все даты в порядке';
-  if(expired.length>0)showToast(msg,'error');
-  else if(nearExpiry.length>0)showToast(msg,'warn');
-  else showToast(msg,'success');
-}
-function checkAllDates(){
-  _datesChecked=true;
-  var expired=[],nearExpiry=[];
-  for(var i=0;i<clients.length;i++){
-    var c=clients[i];
-    if(c.ovz===1){
-      if(isDateExpired(c.ovzDate))expired.push(c.klass+c.letter+' '+c.surname+' (ОВЗ)');
-      else if(isDateNearExpiry(c.ovzDate))nearExpiry.push(c.klass+c.letter+' '+c.surname+' (ОВЗ)');
-    }
-    if(c.maloim===1){
-      if(isDateExpired(c.maloimDate))expired.push(c.klass+c.letter+' '+c.surname+' (Малоим.)');
-      else if(isDateNearExpiry(c.maloimDate))nearExpiry.push(c.klass+c.letter+' '+c.surname+' (Малоим.)');
-    }
-  }
-  renderTable();
-  var msg='';
-  if(expired.length>0)msg+='<div style="margin-bottom:6px"><b style="color:#ff6b6b">Просрочено ('+expired.length+'):</b> '+expired.join(', ')+'</div>';
-  if(nearExpiry.length>0)msg+='<div><b style="color:#ffc857">Истекает менее чем через месяц ('+nearExpiry.length+'):</b> '+nearExpiry.join(', ')+'</div>';
-  if(!msg)msg='Все даты в порядке';
-  if(expired.length>0)showToast(msg,'error');
-  else if(nearExpiry.length>0)showToast(msg,'warn');
-  else showToast(msg,'success');
-}
+function checkDates(type){_datesChecked=true;var expired=[],nearExpiry=[];for(var i=0;i<clients.length;i++){var c=clients[i];if(type==='ovz'&&c.ovz===1){if(isDateExpired(c.ovzDate))expired.push(c.klass+c.letter+' '+c.surname);else if(isDateNearExpiry(c.ovzDate))nearExpiry.push(c.klass+c.letter+' '+c.surname);}if(type==='maloim'&&c.maloim===1){if(isDateExpired(c.maloimDate))expired.push(c.klass+c.letter+' '+c.surname);else if(isDateNearExpiry(c.maloimDate))nearExpiry.push(c.klass+c.letter+' '+c.surname);}}renderTable();var label=type==='ovz'?'ОВЗ':'Малоимущие';var msg='';if(expired.length>0)msg+='<div style="margin-bottom:6px"><b style="color:#ff6b6b">Просрочено ('+expired.length+'):</b> '+expired.join(', ')+'</div>';if(nearExpiry.length>0)msg+='<div><b style="color:#ffc857">Истекает менее чем через месяц ('+nearExpiry.length+'):</b> '+nearExpiry.join(', ')+'</div>';if(!msg)msg=label+': все даты в порядке';if(expired.length>0)showToast(msg,'error');else if(nearExpiry.length>0)showToast(msg,'warn');else showToast(msg,'success');}
+function checkAllDates(){_datesChecked=true;var expired=[],nearExpiry=[];for(var i=0;i<clients.length;i++){var c=clients[i];if(c.ovz===1){if(isDateExpired(c.ovzDate))expired.push(c.klass+c.letter+' '+c.surname+' (ОВЗ)');else if(isDateNearExpiry(c.ovzDate))nearExpiry.push(c.klass+c.letter+' '+c.surname+' (ОВЗ)');}if(c.maloim===1){if(isDateExpired(c.maloimDate))expired.push(c.klass+c.letter+' '+c.surname+' (Малоим.)');else if(isDateNearExpiry(c.maloimDate))nearExpiry.push(c.klass+c.letter+' '+c.surname+' (Малоим.)');}}renderTable();var msg='';if(expired.length>0)msg+='<div style="margin-bottom:6px"><b style="color:#ff6b6b">Просрочено ('+expired.length+'):</b> '+expired.join(', ')+'</div>';if(nearExpiry.length>0)msg+='<div><b style="color:#ffc857">Истекает менее чем через месяц ('+nearExpiry.length+'):</b> '+nearExpiry.join(', ')+'</div>';if(!msg)msg='Все даты в порядке';if(expired.length>0)showToast(msg,'error');else if(nearExpiry.length>0)showToast(msg,'warn');else showToast(msg,'success');}
 
 /* ===== Добавление ученика ===== */
-function addClient(){
-  var surname=document.getElementById('surname').value.trim();
-  if(!surname){showToast("Введите фамилию ученика","error");document.getElementById('surname').focus();return;}
-  if(formState.ovz===1&&!formState.ovzDate){showToast("Укажите дату для ОВЗ (действует до)","error");document.getElementById('ovzDateInput').focus();return;}
-  if(formState.maloim===1&&!formState.maloimDate){showToast("Укажите дату для Малоимущие (действует до)","error");document.getElementById('maloimDateInput').focus();return;}
-  var dup=clients.find(function(c){return c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===getPickerValue(classState)&&c.letter===getPickerValue(letterState);});
-  if(dup){showToast('Ученик "'+surname+'" ('+dup.klass+dup.letter+') уже есть в списке',"error");return;}
-  clients.push({klass:getPickerValue(classState),letter:getPickerValue(letterState),surname:surname,svo:formState.svo,mnogodet:formState.mnogodet,ovz:formState.ovz,ovzDate:formState.ovzDate,maloim:formState.maloim,maloimDate:formState.maloimDate});
-  document.getElementById('surname').value='';
-  formState={svo:0,mnogodet:0,ovz:0,maloim:0,ovzDate:'',maloimDate:''};
-  document.querySelectorAll('.btn-cat').forEach(function(b){b.innerHTML='<i class="fa-solid fa-xmark"></i> Нет';b.classList.remove('active');});
-  document.getElementById('ovzDateInput').value='';document.getElementById('ovzDateInput').setAttribute('disabled','disabled');document.getElementById('ovzDateGroup').classList.remove('enabled');
-  document.getElementById('maloimDateInput').value='';document.getElementById('maloimDateInput').setAttribute('disabled','disabled');document.getElementById('maloimDateGroup').classList.remove('enabled');
-  saveData();renderTable();
-  showToast('Добавлен: '+getPickerValue(classState)+getPickerValue(letterState)+' — '+surname,'success');
-  document.getElementById('surname').focus();
-}
+function addClient(){var surname=document.getElementById('surname').value.trim();if(!surname){showToast("Введите фамилию ученика","error");document.getElementById('surname').focus();return;}if(formState.ovz===1&&!formState.ovzDate){showToast("Укажите дату для ОВЗ (действует до)","error");document.getElementById('ovzDateInput').focus();return;}if(formState.maloim===1&&!formState.maloimDate){showToast("Укажите дату для Малоимущие (действует до)","error");document.getElementById('maloimDateInput').focus();return;}var dup=clients.find(function(c){return c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===getPickerValue(classState)&&c.letter===getPickerValue(letterState);});if(dup){showToast('Ученик "'+surname+'" ('+dup.klass+dup.letter+') уже есть в списке',"error");return;}clients.push({klass:getPickerValue(classState),letter:getPickerValue(letterState),surname:surname,svo:formState.svo,mnogodet:formState.mnogodet,ovz:formState.ovz,ovzDate:formState.ovzDate,maloim:formState.maloim,maloimDate:formState.maloimDate});document.getElementById('surname').value='';formState={svo:0,mnogodet:0,ovz:0,maloim:0,ovzDate:'',maloimDate:''};document.querySelectorAll('.btn-cat').forEach(function(b){b.innerHTML='<i class="fa-solid fa-xmark"></i> Нет';b.classList.remove('active');});document.getElementById('ovzDateInput').value='';document.getElementById('ovzDateInput').setAttribute('disabled','disabled');document.getElementById('ovzDateGroup').classList.remove('enabled');document.getElementById('maloimDateInput').value='';document.getElementById('maloimDateInput').setAttribute('disabled','disabled');document.getElementById('maloimDateGroup').classList.remove('enabled');saveData();renderTable();showToast('Добавлен: '+getPickerValue(classState)+getPickerValue(letterState)+' — '+surname,'success');document.getElementById('surname').focus();}
 
-/* ===== Удаление ===== */
+/* ===== Удаление одной записи ===== */
 function deleteClient(index){if(_editingIndex>=0){showToast("Завершите редактирование перед удалением","error");return;}var c=clients[index];if(!c)return;var name=c.klass+c.letter+' '+c.surname;_suppressInlineBlur=true;var tags=[];if(c.svo===1)tags.push('<span style="color:var(--danger);font-weight:700">СВО</span>');if(c.mnogodet===1)tags.push('<span style="color:var(--warn);font-weight:700">Многодетные</span>');if(c.ovz===1)tags.push('<span style="color:'+(isDateExpired(c.ovzDate)?'var(--danger)':'var(--purple)')+';font-weight:700">ОВЗ'+(isDateExpired(c.ovzDate)?' (проср.)':'')+'</span>');if(c.maloim===1)tags.push('<span style="color:'+(isDateExpired(c.maloimDate)?'var(--danger)':'var(--blue)')+';font-weight:700">Малоим.'+(isDateExpired(c.maloimDate)?' (проср.)':'')+'</span>');var tagsStr=tags.length>0?'<div style="margin-top:6px;font-size:12px;color:var(--fg-muted)">'+tags.join(' &middot; ')+'</div>':'';var previewHTML='<div class="modal-pupil-preview"><span class="preview-badge">'+escapeHTML(c.klass)+'</span><span class="preview-badge">'+escapeHTML(c.letter)+'</span><span class="preview-name">'+escapeHTML(c.surname)+'</span></div>'+tagsStr;showModal('Удаление записи','Удалить этого ученика из списка?',function(){var row=document.querySelector('tr[data-rowidx="'+index+'"]');if(row){row.classList.add('row-removing');setTimeout(function(){clients.splice(index,1);saveData();renderTable();showToast('Удалён: '+name,'info');_suppressInlineBlur=false;},400);}else{clients.splice(index,1);saveData();renderTable();showToast('Удалён: '+name,'info');_suppressInlineBlur=false;}},previewHTML);var origClose=closeModal;closeModal=function(){origClose();_suppressInlineBlur=false;closeModal=origClose;};}
-function confirmClearAll(){if(_editingIndex>=0){showToast("Завершите редактирование перед очисткой","error");return;}if(clients.length===0){showToast('Список уже пуст','info');return;}showModal('Очистка списка','Удалить всех '+clients.length+' учеников? Действие нельзя отменить.',function(){_suppressInlineBlur=true;clients=[];saveData();renderTable();showToast('Список полностью очищен','info');setTimeout(function(){_suppressInlineBlur=false;},50);});}
+
+/* ===== Очистка всего списка — исправленная версия ===== */
+function confirmClearAll(){
+  /* 1. Принудительно прерываем любое активное редактирование */
+  _editingIndex = -1;
+  _editState = {};
+  _suppressInlineBlur = false;
+
+  /* 2. Закрываем модалку если она случайно осталась открытой */
+  document.getElementById('modalOverlay').classList.remove('active');
+  modalCallback = null;
+
+  /* 3. Если список уже пуст — уведомляем и выходим */
+  if(clients.length === 0){
+    showToast('Список уже пуст','info');
+    return;
+  }
+
+  /* 4. Настраиваем модалку вручную, НЕ через showModal().
+     Это критично: showModal() внутри своего onclick вызывает closeModal(),
+     которая обнуляет modalCallback ДО его выполнения — коллбэк никогда
+     не срабатывал и список не очищался. */
+  var confirmBtn = document.getElementById('modalConfirmBtn');
+  var origBtnText = confirmBtn.textContent;
+  var savedOrigBody = document.getElementById('modalBody').innerHTML;
+
+  /* Заполняем модалку */
+  document.getElementById('modalTitle').textContent = 'Очистка списка';
+  document.getElementById('modalBody').innerHTML =
+    '<p id="modalText">Удалить всех ' + clients.length + ' учеников? Действие нельзя отменить.</p>';
+  confirmBtn.textContent = 'Очистить';
+  document.getElementById('modalOverlay').classList.add('active');
+
+  /* 5. Привязываем обработчик: СНАЧАЛА очистка, ПОТОМ закрытие */
+  confirmBtn.onclick = function(){
+    /* Очищаем массив данных */
+    clients = [];
+
+    /* Сбрасываем состояние интерфейса */
+    resetClassFilter();
+    document.getElementById('searchInput').value = '';
+    _datesChecked = false;
+
+    /* Сохраняем и перерисовываем — таблица станет пустой */
+    saveData();
+    renderTable();
+
+    /* Закрываем модалку вручную (без обнуления callback) */
+    document.getElementById('modalOverlay').classList.remove('active');
+    document.getElementById('modalBody').innerHTML = savedOrigBody;
+    modalCallback = null;
+
+    /* Возвращаем текст кнопки */
+    confirmBtn.textContent = origBtnText;
+
+    showToast('Список полностью очищен','info');
+  };
+
+  /* 6. Корректная обработка закрытия модалки по «Отмена», клику по фону или Esc */
+  var realCloseModal = closeModal;
+  closeModal = function(){
+    realCloseModal();
+    confirmBtn.textContent = origBtnText;
+    closeModal = realCloseModal;
+  };
+}
 
 /* ===== Статистика ===== */
 function updateAllStats(){var pool=getFilteredForStats();var vals={total:pool.length,svo:pool.filter(function(c){return c.svo===1;}).length,mnogodet:pool.filter(function(c){return c.mnogodet===1;}).length,ovz:pool.filter(function(c){return c.ovz===1&&!isDateExpired(c.ovzDate);}).length,maloim:pool.filter(function(c){return c.maloim===1&&!isDateExpired(c.maloimDate);}).length,lgota:pool.filter(function(c){return c.svo===1||c.mnogodet===1||(c.ovz===1&&!isDateExpired(c.ovzDate))||(c.maloim===1&&!isDateExpired(c.maloimDate));}).length};document.getElementById('statTotal').textContent=vals.total;document.getElementById('statSvo').textContent=vals.svo;document.getElementById('statMnogodet').textContent=vals.mnogodet;document.getElementById('statOvz').textContent=vals.ovz;document.getElementById('statMaloim').textContent=vals.maloim;document.getElementById('statLgota').textContent=vals.lgota;var fIds=['fStatTotal','fStatSvo','fStatMnogodet','fStatOvz','fStatMaloim','fStatLgota'],fKeys=['total','svo','mnogodet','ovz','maloim','lgota'];for(var i=0;i<fIds.length;i++){var el=document.getElementById(fIds[i]);var nv=String(vals[fKeys[i]]);var ov=_prevStats[fKeys[i]]||'';el.textContent=nv;if(nv!==ov&&ov!==''){el.parentElement.classList.remove('flash');void el.parentElement.offsetWidth;el.parentElement.classList.add('flash');}}_prevStats=vals;}
@@ -456,12 +442,7 @@ function badgeHTML(val,expired){if(val===1){if(expired)return '<span class="badg
 function klassBadge(val){if(val)return '<span class="klass-badge">'+escapeHTML(val)+'</span>';return '<span class="badge-no">&mdash;</span>';}
 function letterBadge(val){if(val)return '<span class="letter-badge">'+escapeHTML(val)+'</span>';return '<span class="badge-no">&mdash;</span>';}
 function formatDate(isoDate){if(!isoDate)return '';var p=isoDate.split('-');if(p.length!==3)return isoDate;return p[2]+'.'+p[1]+'.'+p[0];}
-function dateCellHTML(isoDate,clientIndex,dateField){
-  if(!isoDate)return '<span class="date-cell">&mdash;</span>';
-  if(isDateExpired(isoDate))return '<span class="date-cell date-expired" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span><span class="date-error-badge">ошибка!</span>';
-  if(_datesChecked&&isDateNearExpiry(isoDate))return '<span class="date-cell date-near-expiry" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span><span class="date-warn-badge">внимание</span>';
-  return '<span class="date-cell has-date" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span>';
-}
+function dateCellHTML(isoDate,clientIndex,dateField){if(!isoDate)return '<span class="date-cell">&mdash;</span>';if(isDateExpired(isoDate))return '<span class="date-cell date-expired" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span><span class="date-error-badge">ошибка!</span>';if(_datesChecked&&isDateNearExpiry(isoDate))return '<span class="date-cell date-near-expiry" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span><span class="date-warn-badge">внимание</span>';return '<span class="date-cell has-date" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span>';}
 
 /* ===== Опции для select ===== */
 function classOpts(sel){var h='';for(var i=1;i<=11;i++){var v=String(i);h+='<option value="'+v+'"'+(v===sel?' selected':'')+'>'+v+'</option>';}return h;}
@@ -476,43 +457,17 @@ function renderTable(){
   if(query&&filtered.length!==clients.length){filterInfo.textContent='Найдено: '+filtered.length+' из '+clients.length;}else{filterInfo.textContent='';}
   if(filtered.length===0&&clients.length>0){emptyMsg.innerHTML='<i class="fa-solid fa-magnifying-glass"></i>Ничего не найдено по запросу "'+escapeHTML(query)+'"';}
   else if(clients.length===0){emptyMsg.innerHTML='<i class="fa-solid fa-inbox"></i>Список учеников пуст';}
-
   for(var i=0;i<filtered.length;i++){
     var c=filtered[i],ri=clients.indexOf(c);
     var row=document.createElement('tr');row.dataset.rowidx=ri;
     if(ri===_editingIndex){
-      row.className='row-editing';
-      var es=_editState;
-      var ovzDis=es.ovz===0?' disabled':'';var malDis=es.maloim===0?' disabled':'';
-      row.innerHTML=
-        '<td class="row-num">'+(ri+1)+'</td>'+
-        '<td class="col-klass"><select class="cell-edit-select" id="eKlass">'+classOpts(es.klass)+'</select></td>'+
-        '<td class="col-letter"><select class="cell-edit-select" id="eLetter">'+letterOpts(es.letter)+'</select></td>'+
-        '<td><input type="text" class="cell-edit-input" id="eSurname" value="'+escapeHTML(es.surname)+'"></td>'+
-        '<td class="col-center"><button type="button" class="edit-toggle'+(es.svo===0?' off':'')+'" data-ef="svo">'+(es.svo===1?'Да':'Нет')+'</button></td>'+
-        '<td class="col-center"><button type="button" class="edit-toggle'+(es.mnogodet===0?' off':'')+'" data-ef="mnogodet">'+(es.mnogodet===1?'Да':'Нет')+'</button></td>'+
-        '<td class="col-center"><button type="button" class="edit-toggle'+(es.ovz===0?' off':'')+'" data-ef="ovz">'+(es.ovz===1?'Да':'Нет')+'</button></td>'+
-        '<td class="col-date"><input type="date" class="cell-edit-date" id="eOvzDate" value="'+es.ovzDate+'"'+ovzDis+'></td>'+
-        '<td class="col-center"><button type="button" class="edit-toggle'+(es.maloim===0?' off':'')+'" data-ef="maloim">'+(es.maloim===1?'Да':'Нет')+'</button></td>'+
-        '<td class="col-date"><input type="date" class="cell-edit-date" id="eMaloimDate" value="'+es.maloimDate+'"'+malDis+'></td>'+
-        '<td style="white-space:nowrap"><button class="btn-row-action btn-row-save" id="eSaveBtn" title="Сохранить (Enter)"><i class="fa-solid fa-check"></i></button><button class="btn-row-action btn-row-cancel" id="eCancelBtn" title="Отмена (Esc)"><i class="fa-solid fa-xmark"></i></button></td>';
+      row.className='row-editing';var es=_editState;var ovzDis=es.ovz===0?' disabled':'';var malDis=es.maloim===0?' disabled':'';
+      row.innerHTML='<td class="row-num">'+(ri+1)+'</td><td class="col-klass"><select class="cell-edit-select" id="eKlass">'+classOpts(es.klass)+'</select></td><td class="col-letter"><select class="cell-edit-select" id="eLetter">'+letterOpts(es.letter)+'</select></td><td><input type="text" class="cell-edit-input" id="eSurname" value="'+escapeHTML(es.surname)+'"></td><td class="col-center"><button type="button" class="edit-toggle'+(es.svo===0?' off':'')+'" data-ef="svo">'+(es.svo===1?'Да':'Нет')+'</button></td><td class="col-center"><button type="button" class="edit-toggle'+(es.mnogodet===0?' off':'')+'" data-ef="mnogodet">'+(es.mnogodet===1?'Да':'Нет')+'</button></td><td class="col-center"><button type="button" class="edit-toggle'+(es.ovz===0?' off':'')+'" data-ef="ovz">'+(es.ovz===1?'Да':'Нет')+'</button></td><td class="col-date"><input type="date" class="cell-edit-date" id="eOvzDate" value="'+es.ovzDate+'"'+ovzDis+'></td><td class="col-center"><button type="button" class="edit-toggle'+(es.maloim===0?' off':'')+'" data-ef="maloim">'+(es.maloim===1?'Да':'Нет')+'</button></td><td class="col-date"><input type="date" class="cell-edit-date" id="eMaloimDate" value="'+es.maloimDate+'"'+malDis+'></td><td style="white-space:nowrap"><button class="btn-row-action btn-row-save" id="eSaveBtn" title="Сохранить (Enter)"><i class="fa-solid fa-check"></i></button><button class="btn-row-action btn-row-cancel" id="eCancelBtn" title="Отмена (Esc)"><i class="fa-solid fa-xmark"></i></button></td>';
       tbody.appendChild(row);bindEditRowEvents(ri);
     }else{
-      var ovzErr=c.ovz===1&&isDateExpired(c.ovzDate);var malErr=c.maloim===1&&isDateExpired(c.maloimDate);
-      var ovzWarn=_datesChecked&&c.ovz===1&&isDateNearExpiry(c.ovzDate);var malWarn=_datesChecked&&c.maloim===1&&isDateNearExpiry(c.maloimDate);
+      var ovzErr=c.ovz===1&&isDateExpired(c.ovzDate);var malErr=c.maloim===1&&isDateExpired(c.maloimDate);var ovzWarn=_datesChecked&&c.ovz===1&&isDateNearExpiry(c.ovzDate);var malWarn=_datesChecked&&c.maloim===1&&isDateNearExpiry(c.maloimDate);
       if(ovzErr||malErr) row.className='row-error';else if(ovzWarn||malWarn) row.className='row-warn';
-      row.innerHTML=
-        '<td class="row-num">'+(ri+1)+'</td>'+
-        '<td class="col-klass">'+klassBadge(c.klass)+'</td>'+
-        '<td class="col-letter">'+letterBadge(c.letter)+'</td>'+
-        '<td>'+escapeHTML(c.surname)+'</td>'+
-        '<td class="col-center">'+badgeHTML(c.svo,false)+'</td>'+
-        '<td class="col-center">'+badgeHTML(c.mnogodet,false)+'</td>'+
-        '<td class="col-center">'+badgeHTML(c.ovz,ovzErr)+'</td>'+
-        '<td class="col-date">'+dateCellHTML(c.ovzDate,ri,'ovzDate')+'</td>'+
-        '<td class="col-center">'+badgeHTML(c.maloim,malErr)+'</td>'+
-        '<td class="col-date">'+dateCellHTML(c.maloimDate,ri,'maloimDate')+'</td>'+
-        '<td style="white-space:nowrap"><button class="btn-edit" data-eidx="'+ri+'" title="Редактировать"><i class="fa-solid fa-pen"></i></button> <button class="btn-del" data-didx="'+ri+'" title="Удалить"><i class="fa-solid fa-trash"></i></button></td>';
+      row.innerHTML='<td class="row-num">'+(ri+1)+'</td><td class="col-klass">'+klassBadge(c.klass)+'</td><td class="col-letter">'+letterBadge(c.letter)+'</td><td>'+escapeHTML(c.surname)+'</td><td class="col-center">'+badgeHTML(c.svo,false)+'</td><td class="col-center">'+badgeHTML(c.mnogodet,false)+'</td><td class="col-center">'+badgeHTML(c.ovz,ovzErr)+'</td><td class="col-date">'+dateCellHTML(c.ovzDate,ri,'ovzDate')+'</td><td class="col-center">'+badgeHTML(c.maloim,malErr)+'</td><td class="col-date">'+dateCellHTML(c.maloimDate,ri,'maloimDate')+'</td><td style="white-space:nowrap"><button class="btn-edit" data-eidx="'+ri+'" title="Редактировать"><i class="fa-solid fa-pen"></i></button> <button class="btn-del" data-didx="'+ri+'" title="Удалить"><i class="fa-solid fa-trash"></i></button></td>';
       tbody.appendChild(row);
     }
   }
@@ -522,116 +477,29 @@ function renderTable(){
 /* ===== Делегирование событий таблицы ===== */
 (function(){
   var tbody=document.getElementById('tableBody');
-  tbody.addEventListener('click',function(e){
-    if(_suppressInlineBlur)return;
-    var editBtn=e.target.closest('.btn-edit');if(editBtn){var idx=parseInt(editBtn.dataset.eidx,10);if(!isNaN(idx))startEditing(idx);return;}
-    var delBtn=e.target.closest('.btn-del');if(delBtn){var didx=parseInt(delBtn.dataset.didx,10);if(!isNaN(didx))deleteClient(didx);return;}
-  });
-  tbody.addEventListener('dblclick',function(e){
-    if(_suppressInlineBlur||_editingIndex>=0)return;
-    var badge=e.target.closest('.badge-editable');
-    if(badge){var row=badge.closest('tr');if(!row)return;var ri=parseInt(row.dataset.rowidx,10);if(isNaN(ri))return;var cell=badge.parentElement;var ci=Array.prototype.indexOf.call(row.children,cell);var fieldMap={4:'svo',5:'mnogodet',6:'ovz',8:'maloim'};var field=fieldMap[ci];if(field)toggleInlineField(ri,field);return;}
-    var dateCell=e.target.closest('.date-cell[data-field]');
-    if(dateCell){var row2=dateCell.closest('tr');if(!row2)return;var ri2=parseInt(row2.dataset.rowidx,10);var df=dateCell.dataset.field;if(df&&!isNaN(ri2))startInlineDateEdit(ri2,df,dateCell);return;}
-  });
+  tbody.addEventListener('click',function(e){if(_suppressInlineBlur)return;var editBtn=e.target.closest('.btn-edit');if(editBtn){var idx=parseInt(editBtn.dataset.eidx,10);if(!isNaN(idx))startEditing(idx);return;}var delBtn=e.target.closest('.btn-del');if(delBtn){var didx=parseInt(delBtn.dataset.didx,10);if(!isNaN(didx))deleteClient(didx);return;}});
+  tbody.addEventListener('dblclick',function(e){if(_suppressInlineBlur||_editingIndex>=0)return;var badge=e.target.closest('.badge-editable');if(badge){var row=badge.closest('tr');if(!row)return;var ri=parseInt(row.dataset.rowidx,10);if(isNaN(ri))return;var cell=badge.parentElement;var ci=Array.prototype.indexOf.call(row.children,cell);var fieldMap={4:'svo',5:'mnogodet',6:'ovz',8:'maloim'};var field=fieldMap[ci];if(field)toggleInlineField(ri,field);return;}var dateCell=e.target.closest('.date-cell[data-field]');if(dateCell){var row2=dateCell.closest('tr');if(!row2)return;var ri2=parseInt(row2.dataset.rowidx,10);var df=dateCell.dataset.field;if(df&&!isNaN(ri2))startInlineDateEdit(ri2,df,dateCell);return;}});
 })();
 
 /* ===== Инлайн-переключение бейджей ===== */
-function toggleInlineField(ri,field){
-  var c=clients[ri];
-  if(field==='ovz'){if(c.ovz===1){c.ovz=0;c.ovzDate='';}else{c.ovz=1;}}
-  else if(field==='maloim'){if(c.maloim===1){c.maloim=0;c.maloimDate='';}else{c.maloim=1;}}
-  else{c[field]=c[field]===0?1:0;}
-  saveData();renderTable();
-}
+function toggleInlineField(ri,field){var c=clients[ri];if(field==='ovz'){if(c.ovz===1){c.ovz=0;c.ovzDate='';}else{c.ovz=1;}}else if(field==='maloim'){if(c.maloim===1){c.maloim=0;c.maloimDate='';}else{c.maloim=1;}}else{c[field]=c[field]===0?1:0;}saveData();renderTable();}
 
 /* ===== Инлайн-редактирование даты ===== */
-function startInlineDateEdit(ri,field,cellEl){
-  var c=clients[ri];var currentVal=c[field]||'';var td=cellEl.parentElement;
-  var input=document.createElement('input');input.type='date';input.className='cell-edit-date';input.value=currentVal;input.style.width='100%';
-  td.innerHTML='';td.appendChild(input);input.focus();_suppressInlineBlur=true;
-  function finish(){var newVal=input.value||'';c[field]=newVal;_suppressInlineBlur=false;saveData();renderTable();}
-  input.addEventListener('change',finish);
-  input.addEventListener('blur',function(){setTimeout(function(){if(_suppressInlineBlur)finish();},150);});
-  input.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();finish();}if(e.key==='Escape'){_suppressInlineBlur=false;renderTable();}});
-}
+function startInlineDateEdit(ri,field,cellEl){var c=clients[ri];var currentVal=c[field]||'';var td=cellEl.parentElement;var input=document.createElement('input');input.type='date';input.className='cell-edit-date';input.value=currentVal;input.style.width='100%';td.innerHTML='';td.appendChild(input);input.focus();_suppressInlineBlur=true;function finish(){var newVal=input.value||'';c[field]=newVal;_suppressInlineBlur=false;saveData();renderTable();}input.addEventListener('change',finish);input.addEventListener('blur',function(){setTimeout(function(){if(_suppressInlineBlur)finish();},150);});input.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();finish();}if(e.key==='Escape'){_suppressInlineBlur=false;renderTable();}});}
 
 /* ===== Полнострочное редактирование ===== */
 function startEditing(index){if(_editingIndex>=0){showToast('Сначала завершите текущее редактирование','error');return;}var c=clients[index];_editingIndex=index;_editState={klass:c.klass,letter:c.letter,surname:c.surname,svo:c.svo,mnogodet:c.mnogodet,ovz:c.ovz,ovzDate:c.ovzDate,maloim:c.maloim,maloimDate:c.maloimDate};renderTable();var el=document.getElementById('eSurname');if(el)el.focus();}
-function bindEditRowEvents(ri){
-  var row=document.querySelector('tr[data-rowidx="'+ri+'"]');if(!row)return;
-  row.querySelectorAll('.edit-toggle').forEach(function(btn){
-    btn.addEventListener('click',function(){var f=this.dataset.ef;_editState[f]=_editState[f]===0?1:0;this.textContent=_editState[f]===1?'Да':'Нет';this.classList.toggle('off',_editState[f]===0);if(f==='ovz'){var di=document.getElementById('eOvzDate');if(_editState.ovz===1){di.removeAttribute('disabled');}else{di.setAttribute('disabled','disabled');di.value='';_editState.ovzDate='';}}if(f==='maloim'){var di2=document.getElementById('eMaloimDate');if(_editState.maloim===1){di2.removeAttribute('disabled');}else{di2.setAttribute('disabled','disabled');di2.value='';_editState.maloimDate='';}}});
-  });
-  var ovzD=document.getElementById('eOvzDate');if(ovzD)ovzD.addEventListener('change',function(){_editState.ovzDate=this.value||'';});
-  var malD=document.getElementById('eMaloimDate');if(malD)malD.addEventListener('change',function(){_editState.maloimDate=this.value||'';});
-  document.getElementById('eSaveBtn').addEventListener('click',function(){saveEdit(ri);});
-  document.getElementById('eCancelBtn').addEventListener('click',function(){cancelEdit();});
-  row.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();saveEdit(ri);}if(e.key==='Escape'){e.preventDefault();cancelEdit();}});
-}
-function saveEdit(ri){
-  var surname=document.getElementById('eSurname').value.trim();if(!surname){showToast('Фамилия не может быть пустой','error');document.getElementById('eSurname').focus();return;}
-  var klass=document.getElementById('eKlass').value;var letter=document.getElementById('eLetter').value;
-  if(_editState.ovz===1&&!_editState.ovzDate){showToast('Укажите дату для ОВЗ','error');document.getElementById('eOvzDate').focus();return;}
-  if(_editState.maloim===1&&!_editState.maloimDate){showToast('Укажите дату для Малоимущие','error');document.getElementById('eMaloimDate').focus();return;}
-  var dup=clients.find(function(c,idx){return idx!==ri&&c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===klass&&c.letter===letter;});
-  if(dup){showToast('Ученик "'+surname+'" ('+klass+letter+') уже есть в списке','error');return;}
-  clients[ri].klass=klass;clients[ri].letter=letter;clients[ri].surname=surname;
-  clients[ri].svo=_editState.svo;clients[ri].mnogodet=_editState.mnogodet;
-  clients[ri].ovz=_editState.ovz;clients[ri].ovzDate=_editState.ovzDate;
-  clients[ri].maloim=_editState.maloim;clients[ri].maloimDate=_editState.maloimDate;
-  _editingIndex=-1;_editState={};saveData();renderTable();showToast('Запись обновлена','success');
-}
+function bindEditRowEvents(ri){var row=document.querySelector('tr[data-rowidx="'+ri+'"]');if(!row)return;row.querySelectorAll('.edit-toggle').forEach(function(btn){btn.addEventListener('click',function(){var f=this.dataset.ef;_editState[f]=_editState[f]===0?1:0;this.textContent=_editState[f]===1?'Да':'Нет';this.classList.toggle('off',_editState[f]===0);if(f==='ovz'){var di=document.getElementById('eOvzDate');if(_editState.ovz===1){di.removeAttribute('disabled');}else{di.setAttribute('disabled','disabled');di.value='';_editState.ovzDate='';}}if(f==='maloim'){var di2=document.getElementById('eMaloimDate');if(_editState.maloim===1){di2.removeAttribute('disabled');}else{di2.setAttribute('disabled','disabled');di2.value='';_editState.maloimDate='';}}});});var ovzD=document.getElementById('eOvzDate');if(ovzD)ovzD.addEventListener('change',function(){_editState.ovzDate=this.value||'';});var malD=document.getElementById('eMaloimDate');if(malD)malD.addEventListener('change',function(){_editState.maloimDate=this.value||'';});document.getElementById('eSaveBtn').addEventListener('click',function(){saveEdit(ri);});document.getElementById('eCancelBtn').addEventListener('click',function(){cancelEdit();});row.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();saveEdit(ri);}if(e.key==='Escape'){e.preventDefault();cancelEdit();}});}
+function saveEdit(ri){var surname=document.getElementById('eSurname').value.trim();if(!surname){showToast('Фамилия не может быть пустой','error');document.getElementById('eSurname').focus();return;}var klass=document.getElementById('eKlass').value;var letter=document.getElementById('eLetter').value;if(_editState.ovz===1&&!_editState.ovzDate){showToast('Укажите дату для ОВЗ','error');document.getElementById('eOvzDate').focus();return;}if(_editState.maloim===1&&!_editState.maloimDate){showToast('Укажите дату для Малоимущие','error');document.getElementById('eMaloimDate').focus();return;}var dup=clients.find(function(c,idx){return idx!==ri&&c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===klass&&c.letter===letter;});if(dup){showToast('Ученик "'+surname+'" ('+klass+letter+') уже есть в списке','error');return;}clients[ri].klass=klass;clients[ri].letter=letter;clients[ri].surname=surname;clients[ri].svo=_editState.svo;clients[ri].mnogodet=_editState.mnogodet;clients[ri].ovz=_editState.ovz;clients[ri].ovzDate=_editState.ovzDate;clients[ri].maloim=_editState.maloim;clients[ri].maloimDate=_editState.maloimDate;_editingIndex=-1;_editState={};saveData();renderTable();showToast('Запись обновлена','success');}
 function cancelEdit(){_editingIndex=-1;_editState={};renderTable();}
 
 /* ===== Excel: выгрузка ===== */
-function exportToExcel(){
-  if(clients.length===0){showToast('Нет данных для выгрузки','error');return;}
-  var data=clients.map(function(c,i){return{'\u2116':i+1,'\u041a\u043b\u0430\u0441\u0441':c.klass,'\u0411\u0443\u043a\u0432\u0430':c.letter,'\u0424\u0430\u043c\u0438\u043b\u0438\u044f':c.surname,'\u0421\u0412\u041e':c.svo===1?'\u0414\u0430':'\u041d\u0435\u0442','\u041c\u043d\u043e\u0433\u043e\u0434\u0435\u0442\u043d\u044b\u0435':c.mnogodet===1?'\u0414\u0430':'\u041d\u0435\u0442','\u041e\u0412\u0417':c.ovz===1?'\u0414\u0430':'\u041d\u0435\u0442','\u041e\u0412\u0417 \u0434\u0430\u0442\u0430':c.ovzDate?formatDate(c.ovzDate):'','\u041c\u0430\u043b\u043e\u0438\u043c\u0443\u0449\u0438\u0435':c.maloim===1?'\u0414\u0430':'\u041d\u0435\u0442','\u041c\u0430\u043b\u043e\u0438\u043c. \u0434\u0430\u0442\u0430':c.maloimDate?formatDate(c.maloimDate):''};});
-  var ws=XLSX.utils.json_to_sheet(data);var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'\u0423\u0447\u0435\u043d\u0438\u043a\u0438');
-  XLSX.writeFile(wb,'\u043f\u0438\u0442\u0430\u043d\u0438\u0435_'+new Date().toISOString().slice(0,10)+'.xlsx');
-  showToast('\u0412\u044b\u0433\u0440\u0443\u0436\u0435\u043d\u043e '+clients.length+' \u0437\u0430\u043f\u0438\u0441\u0435\u0439','success');
-}
+function exportToExcel(){if(clients.length===0){showToast('Нет данных для выгрузки','error');return;}var data=clients.map(function(c,i){return{'\u2116':i+1,'\u041a\u043b\u0430\u0441\u0441':c.klass,'\u0411\u0443\u043a\u0432\u0430':c.letter,'\u0424\u0430\u043c\u0438\u043b\u0438\u044f':c.surname,'\u0421\u0412\u041e':c.svo===1?'\u0414\u0430':'\u041d\u0435\u0442','\u041c\u043d\u043e\u0433\u043e\u0434\u0435\u0442\u043d\u044b\u0435':c.mnogodet===1?'\u0414\u0430':'\u041d\u0435\u0442','\u041e\u0412\u0417':c.ovz===1?'\u0414\u0430':'\u041d\u0435\u0442','\u041e\u0412\u0417 \u0434\u0430\u0442\u0430':c.ovzDate?formatDate(c.ovzDate):'','\u041c\u0430\u043b\u043e\u0438\u043c\u0443\u0449\u0438\u0435':c.maloim===1?'\u0414\u0430':'\u041d\u0435\u0442','\u041c\u0430\u043b\u043e\u0438\u043c. \u0434\u0430\u0442\u0430':c.maloimDate?formatDate(c.maloimDate):''};});var ws=XLSX.utils.json_to_sheet(data);var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'\u0423\u0447\u0435\u043d\u0438\u043a\u0438');XLSX.writeFile(wb,'\u043f\u0438\u0442\u0430\u043d\u0438\u0435_'+new Date().toISOString().slice(0,10)+'.xlsx');showToast('\u0412\u044b\u0433\u0440\u0443\u0436\u0435\u043d\u043e '+clients.length+' \u0437\u0430\u043f\u0438\u0441\u0435\u0439','success');}
 
 /* ===== Excel: загрузка ===== */
-function importFromExcel(event){
-  var file=event.target.files[0];if(!file)return;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      var data=new Uint8Array(e.target.result);var wb=XLSX.read(data,{type:'array'});
-      var sheet=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(sheet,{defval:''});
-      var added=0,skipped=0;
-      for(var i=0;i<rows.length;i++){
-        var r=rows[i];
-        var surname=String(r['\u0424\u0430\u043c\u0438\u043b\u0438\u044f']||r['\u0444\u0430\u043c\u0438\u043b\u0438\u044f']||'').trim();if(!surname){skipped++;continue;}
-        var klass=String(r['\u041a\u043b\u0430\u0441\u0441']||r['\u043a\u043b\u0430\u0441\u0441']||'').trim();var letter=String(r['\u0411\u0443\u043a\u0432\u0430']||r['\u0431\u0443\u043a\u0432\u0430']||'').trim();
-        if(!klass||!letter){skipped++;continue;}
-        var dup=clients.find(function(c){return c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===klass&&c.letter===letter;});
-        if(dup){skipped++;continue;}
-        var svo=parseYesNo(r['\u0421\u0412\u041e']||r['\u0441\u0432\u043e']);var mnogodet=parseYesNo(r['\u041c\u043d\u043e\u0433\u043e\u0434\u0435\u0442\u043d\u044b\u0435']||r['\u043c\u043d\u043e\u0433\u043e\u0434\u0435\u0442\u043d\u044b\u0435']);
-        var ovz=parseYesNo(r['\u041e\u0412\u0417']||r['\u043e\u0432\u0437']);var maloim=parseYesNo(r['\u041c\u0430\u043b\u043e\u0438\u043c\u0443\u0449\u0438\u0435']||r['\u043c\u0430\u043b\u043e\u0438\u043c\u0443\u0449\u0438\u0435']);
-        var ovzDate=parseDateFromExcel(r['\u041e\u0412\u0417 \u0434\u0430\u0442\u0430']||r['\u043e\u0432\u0437 \u0434\u0430\u0442\u0430']);
-        var maloimDate=parseDateFromExcel(r['\u041c\u0430\u043b\u043e\u0438\u043c. \u0434\u0430\u0442\u0430']||r['\u043c\u0430\u043b\u043e\u0438\u043c. \u0434\u0430\u0442\u0430']||r['\u041c\u0430\u043b\u043e\u0438\u043c\u0443\u0449\u0438\u0435 \u0434\u0430\u0442\u0430']);
-        clients.push({klass:klass,letter:letter,surname:surname,svo:svo,mnogodet:mnogodet,ovz:ovz,ovzDate:ovzDate,maloim:maloim,maloimDate:maloimDate});
-        added++;
-      }
-      saveData();renderTable();
-      var addMsg='\u0418\u043c\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u043e: '+added;var skipMsg=skipped>0?', \u043f\u0440\u043e\u043f\u0443\u0449\u0435\u043d\u043e: '+skipped:'';
-      showToast(addMsg+skipMsg,added>0?'success':'error');
-    }catch(err){showToast('\u041e\u0448\u0438\u0431\u043a\u0430 \u0447\u0442\u0435\u043d\u0438\u044f \u0444\u0430\u0439\u043b\u0430: '+err.message,'error');}
-  };
-  reader.readAsArrayBuffer(file);event.target.value='';
-}
+function importFromExcel(event){var file=event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var data=new Uint8Array(e.target.result);var wb=XLSX.read(data,{type:'array'});var sheet=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(sheet,{defval:''});var added=0,skipped=0;for(var i=0;i<rows.length;i++){var r=rows[i];var surname=String(r['\u0424\u0430\u043c\u0438\u043b\u0438\u044f']||r['\u0444\u0430\u043c\u0438\u043b\u0438\u044f']||'').trim();if(!surname){skipped++;continue;}var klass=String(r['\u041a\u043b\u0430\u0441\u0441']||r['\u043a\u043b\u0430\u0441\u0441']||'').trim();var letter=String(r['\u0411\u0443\u043a\u0432\u0430']||r['\u0431\u0443\u043a\u0432\u0430']||'').trim();if(!klass||!letter){skipped++;continue;}var dup=clients.find(function(c){return c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===klass&&c.letter===letter;});if(dup){skipped++;continue;}var svo=parseYesNo(r['\u0421\u0412\u041e']||r['\u0441\u0432\u043e']);var mnogodet=parseYesNo(r['\u041c\u043d\u043e\u0433\u043e\u0434\u0435\u0442\u043d\u044b\u0435']||r['\u043c\u043d\u043e\u0433\u043e\u0434\u0435\u0442\u043d\u044b\u0435']);var ovz=parseYesNo(r['\u041e\u0412\u0417']||r['\u043e\u0432\u0437']);var maloim=parseYesNo(r['\u041c\u0430\u043b\u043e\u0438\u043c\u0443\u0449\u0438\u0435']||r['\u043c\u0430\u043b\u043e\u0438\u043c\u0443\u0449\u0438\u0435']);var ovzDate=parseDateFromExcel(r['\u041e\u0412\u0417 \u0434\u0430\u0442\u0430']||r['\u043e\u0432\u0437 \u0434\u0430\u0442\u0430']);var maloimDate=parseDateFromExcel(r['\u041c\u0430\u043b\u043e\u0438\u043c. \u0434\u0430\u0442\u0430']||r['\u043c\u0430\u043b\u043e\u0438\u043c. \u0434\u0430\u0442\u0430']||r['\u041c\u0430\u043b\u043e\u0438\u043c\u0443\u0449\u0438\u0435 \u0434\u0430\u0442\u0430']);clients.push({klass:klass,letter:letter,surname:surname,svo:svo,mnogodet:mnogodet,ovz:ovz,ovzDate:ovzDate,maloim:maloim,maloimDate:maloimDate});added++;}saveData();renderTable();var addMsg='\u0418\u043c\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u043e: '+added;var skipMsg=skipped>0?', \u043f\u0440\u043e\u043f\u0443\u0449\u0435\u043d\u043e: '+skipped:'';showToast(addMsg+skipMsg,added>0?'success':'error');}catch(err){showToast('\u041e\u0448\u0438\u0431\u043a\u0430 \u0447\u0442\u0435\u043d\u0438\u044f \u0444\u0430\u0439\u043b\u0430: '+err.message,'error');}};reader.readAsArrayBuffer(file);event.target.value='';}
 function parseYesNo(val){if(!val)return 0;var s=String(val).trim().toLowerCase();return(s==='\u0434\u0430'||s==='1'||s==='yes'||s==='true')?1:0;}
-function parseDateFromExcel(val){
-  if(!val)return '';var s=String(val).trim();
-  var m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
-  if(m)return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
-  if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;
-  var num=Number(val);if(!isNaN(num)&&num>40000&&num<60000){var d=new Date((num-25569)*86400*1000);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-  return '';
-}
+function parseDateFromExcel(val){if(!val)return '';var s=String(val).trim();var m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);if(m)return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;var num=Number(val);if(!isNaN(num)&&num>40000&&num<60000){var d=new Date((num-25569)*86400*1000);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}return '';}
 </script>
 </body>
 </html>

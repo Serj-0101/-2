@@ -95,6 +95,9 @@ tbody tr:hover{background:var(--card-hover);}
 tr.row-error{background:rgba(255,107,107,0.07)!important;}
 tr.row-error:hover{background:rgba(255,107,107,0.13)!important;}
 tr.row-error td:first-child{box-shadow:inset 3px 0 0 var(--danger);}
+tr.row-warn{background:rgba(255,200,87,0.05)!important;}
+tr.row-warn:hover{background:rgba(255,200,87,0.09)!important;}
+tr.row-warn td:first-child{box-shadow:inset 3px 0 0 var(--warn);}
 tr.row-editing{background:rgba(0,201,167,0.05)!important;}
 tr.row-editing:hover{background:rgba(0,201,167,0.09)!important;}
 tr.row-editing td:first-child{box-shadow:inset 3px 0 0 var(--accent);}
@@ -102,26 +105,24 @@ tr.row-editing td:first-child{box-shadow:inset 3px 0 0 var(--accent);}
 .klass-badge,.letter-badge{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:2px 8px;border-radius:6px;font-size:13px;font-weight:800;background:rgba(255,255,255,0.04);color:var(--fg);border:1px solid var(--border);}
 .badge{display:inline-flex;align-items:center;justify-content:center;min-width:32px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:default;}
 .badge-yes{background:var(--accent-dim);color:var(--accent);}.badge-yes-expired{background:var(--danger-dim);color:var(--danger);}.badge-no{color:#444860;font-size:16px;}
-.date-cell{font-size:13px;color:var(--fg-muted);font-weight:600;}.date-cell.has-date{color:var(--accent);}.date-cell.date-expired{color:var(--danger);}
+.date-cell{font-size:13px;color:var(--fg-muted);font-weight:600;}.date-cell.has-date{color:var(--accent);}.date-cell.date-expired{color:var(--danger);}.date-cell.date-near-expiry{color:var(--warn);}
 .date-error-badge{display:inline-block;margin-left:5px;padding:2px 7px;background:var(--danger);color:#fff;border-radius:5px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;line-height:1.2;animation:errorPulse 2s ease-in-out infinite;vertical-align:middle;}
+.date-warn-badge{display:inline-block;margin-left:5px;padding:2px 7px;background:var(--warn);color:#1a1a2e;border-radius:5px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;line-height:1.2;animation:warnPulse 2s ease-in-out infinite;vertical-align:middle;}
 @keyframes errorPulse{0%,100%{opacity:1;}50%{opacity:0.65;}}
+@keyframes warnPulse{0%,100%{opacity:1;}50%{opacity:0.7;}}
 .btn-th-check{background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:12px;padding:3px 5px;margin-left:3px;border-radius:5px;transition:all 0.2s;vertical-align:middle;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;}
 .btn-th-check:hover{color:var(--warn);background:var(--warn-dim);}.btn-th-check:active{transform:scale(0.9);}
-
-/* Кнопки действий в строке */
 .btn-edit{background:none;border:none;color:#555a72;cursor:pointer;font-size:13px;padding:5px 6px;border-radius:6px;transition:all 0.2s;line-height:1;}
 .btn-edit:hover{color:var(--accent);background:var(--accent-dim);}
 .btn-del{background:none;border:none;color:#555a72;cursor:pointer;font-size:14px;padding:5px 6px;border-radius:6px;transition:all 0.2s;line-height:1;}
 .btn-del:hover{color:#fff;background:var(--danger);transform:scale(1.1);}.btn-del:active{transform:scale(0.95);}
-
-/* Инлайн-редактирование в таблице */
 .cell-edit-select{padding:5px 2px;background:var(--bg2);border:1.5px solid var(--accent);border-radius:6px;color:var(--fg);font-family:inherit;font-size:13px;font-weight:700;outline:none;box-shadow:0 0 0 2px var(--accent-dim);text-align:center;width:100%;max-width:56px;cursor:pointer;color-scheme:dark;}
-.cell-edit-select:focus{border-color:var(--accent-hover);box-shadow:0 0 0 3px var(--accent-dim);}
+.cell-edit-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
 .cell-edit-input{padding:5px 10px;background:var(--bg2);border:1.5px solid var(--accent);border-radius:6px;color:var(--fg);font-family:inherit;font-size:13px;font-weight:600;outline:none;box-shadow:0 0 0 2px var(--accent-dim);width:100%;min-width:60px;}
-.cell-edit-input:focus{border-color:var(--accent-hover);box-shadow:0 0 0 3px var(--accent-dim);}
+.cell-edit-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
 .cell-edit-date{padding:5px 6px;background:var(--bg2);border:1.5px solid var(--accent);border-radius:6px;color:var(--fg);font-family:inherit;font-size:12px;font-weight:600;outline:none;box-shadow:0 0 0 2px var(--accent-dim);color-scheme:dark;text-align:center;width:100%;}
 .cell-edit-date:disabled{opacity:0.3;cursor:not-allowed;}
-.cell-edit-date:not(:disabled):focus{border-color:var(--accent-hover);box-shadow:0 0 0 3px var(--accent-dim);}
+.cell-edit-date:not(:disabled):focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
 .edit-toggle{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--accent);background:var(--accent-dim);color:var(--accent);font-family:inherit;transition:all 0.15s;white-space:nowrap;}
 .edit-toggle.off{border-color:var(--border);background:transparent;color:var(--fg-muted);}
 .edit-toggle:hover{filter:brightness(1.25);transform:scale(1.05);}
@@ -130,12 +131,11 @@ tr.row-editing td:first-child{box-shadow:inset 3px 0 0 var(--accent);}
 .btn-row-save{background:var(--accent-dim);color:var(--accent);}.btn-row-save:hover{background:rgba(0,201,167,0.25);transform:scale(1.1);}
 .btn-row-cancel{background:transparent;color:var(--fg-muted);}.btn-row-cancel:hover{background:var(--card-hover);color:var(--fg);}
 .btn-row-action:active{transform:scale(0.9);}
-
 .empty-msg{text-align:center;color:#555a72;padding:40px 20px;font-size:15px;}.empty-msg i{display:block;font-size:36px;margin-bottom:12px;opacity:0.4;}
 .toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;}
-.toast{padding:14px 20px;border-radius:10px;font-size:13px;font-weight:600;font-family:'Nunito',sans-serif;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,0.4);display:flex;align-items:flex-start;gap:10px;animation:toastIn 0.35s ease;max-width:440px;line-height:1.45;}
+.toast{padding:14px 20px;border-radius:10px;font-size:13px;font-weight:600;font-family:'Nunito',sans-serif;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,0.4);display:flex;align-items:flex-start;gap:10px;animation:toastIn 0.35s ease;max-width:480px;line-height:1.45;}
 .toast .toast-icon{flex-shrink:0;font-size:15px;margin-top:1px;}.toast .toast-body{flex:1;word-break:break-word;}
-.toast.success{background:linear-gradient(135deg,#00a88a,#00c9a7);}.toast.error{background:linear-gradient(135deg,#d63031,#ff6b6b);}.toast.info{background:linear-gradient(135deg,#6c5ce7,#a78bfa);}
+.toast.success{background:linear-gradient(135deg,#00a88a,#00c9a7);}.toast.error{background:linear-gradient(135deg,#d63031,#ff6b6b);}.toast.info{background:linear-gradient(135deg,#6c5ce7,#a78bfa);}.toast.warn{background:linear-gradient(135deg,#e67e22,#ffc857);color:#1a1a2e;}
 .toast.out{animation:toastOut 0.3s ease forwards;}
 @keyframes toastIn{from{opacity:0;transform:translateX(60px) scale(0.95);}to{opacity:1;transform:translateX(0) scale(1);}}
 @keyframes toastOut{from{opacity:1;transform:translateX(0) scale(1);}to{opacity:0;transform:translateX(60px) scale(0.9);}}
@@ -269,8 +269,31 @@ var _suppressInlineBlur=false;
 var _editingIndex=-1;
 var _editState={};
 var _prevStats={};
+/* Флаг: включена ли подсветка «истекает менее чем через месяц» */
+var _datesChecked=false;
 
-function isDateExpired(isoDate){if(!isoDate)return false;var today=new Date();today.setHours(0,0,0,0);var p=isoDate.split('-');var d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10),0,0,0,0);return d<today;}
+function escapeHTML(str){if(!str)return'';return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* Проверка: дата просрочена (дата из ячейки < сегодня) */
+function isDateExpired(isoDate){
+  if(!isoDate)return false;
+  var today=new Date();today.setHours(0,0,0,0);
+  var p=isoDate.split('-');
+  var d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10),0,0,0,0);
+  return d<today;
+}
+
+/* Проверка: до истечения даты осталось менее 1 месяца (но ещё не просрочено) */
+function isDateNearExpiry(isoDate){
+  if(!isoDate)return false;
+  if(isDateExpired(isoDate))return false;
+  var today=new Date();today.setHours(0,0,0,0);
+  var p=isoDate.split('-');
+  var d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10),0,0,0,0);
+  var diffMs=d.getTime()-today.getTime();
+  var oneMonthMs=30*24*60*60*1000;
+  return diffMs>0&&diffMs<oneMonthMs;
+}
 
 /* ===== Фильтр по классам ===== */
 var classFilter={};
@@ -303,7 +326,7 @@ initPicker(document.getElementById('letterTrack'),document.getElementById('lette
 function saveData(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(clients));}catch(e){}}
 
 /* ===== Тосты ===== */
-function showToast(message,type){type=type||'success';var container=document.getElementById('toastContainer');var toast=document.createElement('div');toast.className='toast '+type;var icons={success:'fa-circle-check',error:'fa-circle-exclamation',info:'fa-circle-info'};toast.innerHTML='<i class="fa-solid '+(icons[type]||icons.info)+' toast-icon"></i><div class="toast-body">'+message+'</div>';container.appendChild(toast);setTimeout(function(){toast.classList.add('out');setTimeout(function(){toast.remove();},300);},4500);}
+function showToast(message,type){type=type||'success';var container=document.getElementById('toastContainer');var toast=document.createElement('div');toast.className='toast '+type;var icons={success:'fa-circle-check',error:'fa-circle-exclamation',info:'fa-circle-info',warn:'fa-triangle-exclamation'};toast.innerHTML='<i class="fa-solid '+(icons[type]||icons.info)+' toast-icon"></i><div class="toast-body">'+message+'</div>';container.appendChild(toast);setTimeout(function(){toast.classList.add('out');setTimeout(function(){toast.remove();},300);},5000);}
 
 /* ===== Модалка ===== */
 var modalCallback=null;var _origModalBody='';
@@ -319,8 +342,53 @@ document.getElementById('ovzDateInput').setAttribute('disabled','disabled');
 document.getElementById('maloimDateInput').setAttribute('disabled','disabled');
 
 /* ===== Проверка дат ===== */
-function checkDates(type){var names=[];for(var i=0;i<clients.length;i++){var c=clients[i];if(type==='ovz'&&c.ovz===1&&isDateExpired(c.ovzDate))names.push(c.klass+c.letter+' '+c.surname);if(type==='maloim'&&c.maloim===1&&isDateExpired(c.maloimDate))names.push(c.klass+c.letter+' '+c.surname);}renderTable();var label=type==='ovz'?'ОВЗ':'Малоимущие';if(names.length>0)showToast(label+' — просрочено ('+names.length+'):<br>'+names.join(', '),'error');else showToast(label+': все даты в порядке','success');}
-function checkAllDates(){var names=[];for(var i=0;i<clients.length;i++){var c=clients[i];if(c.ovz===1&&isDateExpired(c.ovzDate))names.push(c.klass+c.letter+' '+c.surname+' (ОВЗ)');if(c.maloim===1&&isDateExpired(c.maloimDate))names.push(c.klass+c.letter+' '+c.surname+' (Малоим.)');}renderTable();if(names.length>0)showToast('Просрочено ('+names.length+'):<br>'+names.join(', '),'error');else showToast('Все даты в порядке','success');}
+function checkDates(type){
+  _datesChecked=true;
+  var expired=[],nearExpiry=[];
+  for(var i=0;i<clients.length;i++){
+    var c=clients[i];
+    if(type==='ovz'&&c.ovz===1){
+      if(isDateExpired(c.ovzDate))expired.push(c.klass+c.letter+' '+c.surname);
+      else if(isDateNearExpiry(c.ovzDate))nearExpiry.push(c.klass+c.letter+' '+c.surname);
+    }
+    if(type==='maloim'&&c.maloim===1){
+      if(isDateExpired(c.maloimDate))expired.push(c.klass+c.letter+' '+c.surname);
+      else if(isDateNearExpiry(c.maloimDate))nearExpiry.push(c.klass+c.letter+' '+c.surname);
+    }
+  }
+  renderTable();
+  var label=type==='ovz'?'ОВЗ':'Малоимущие';
+  var msg='';
+  if(expired.length>0)msg+='<div style="margin-bottom:6px"><b style="color:#ff6b6b">Просрочено ('+expired.length+'):</b> '+expired.join(', ')+'</div>';
+  if(nearExpiry.length>0)msg+='<div><b style="color:#ffc857">Истекает менее чем через месяц ('+nearExpiry.length+'):</b> '+nearExpiry.join(', ')+'</div>';
+  if(!msg)msg=label+': все даты в порядке';
+  if(expired.length>0)showToast(msg,'error');
+  else if(nearExpiry.length>0)showToast(msg,'warn');
+  else showToast(msg,'success');
+}
+function checkAllDates(){
+  _datesChecked=true;
+  var expired=[],nearExpiry=[];
+  for(var i=0;i<clients.length;i++){
+    var c=clients[i];
+    if(c.ovz===1){
+      if(isDateExpired(c.ovzDate))expired.push(c.klass+c.letter+' '+c.surname+' (ОВЗ)');
+      else if(isDateNearExpiry(c.ovzDate))nearExpiry.push(c.klass+c.letter+' '+c.surname+' (ОВЗ)');
+    }
+    if(c.maloim===1){
+      if(isDateExpired(c.maloimDate))expired.push(c.klass+c.letter+' '+c.surname+' (Малоим.)');
+      else if(isDateNearExpiry(c.maloimDate))nearExpiry.push(c.klass+c.letter+' '+c.surname+' (Малоим.)');
+    }
+  }
+  renderTable();
+  var msg='';
+  if(expired.length>0)msg+='<div style="margin-bottom:6px"><b style="color:#ff6b6b">Просрочено ('+expired.length+'):</b> '+expired.join(', ')+'</div>';
+  if(nearExpiry.length>0)msg+='<div><b style="color:#ffc857">Истекает менее чем через месяц ('+nearExpiry.length+'):</b> '+nearExpiry.join(', ')+'</div>';
+  if(!msg)msg='Все даты в порядке';
+  if(expired.length>0)showToast(msg,'error');
+  else if(nearExpiry.length>0)showToast(msg,'warn');
+  else showToast(msg,'success');
+}
 
 /* ===== Добавление ученика ===== */
 function addClient(){var surname=document.getElementById('surname').value.trim();if(!surname){showToast("Введите фамилию ученика","error");document.getElementById('surname').focus();return;}if(formState.ovz===1&&!formState.ovzDate){showToast("Укажите дату для ОВЗ (действует до)","error");document.getElementById('ovzDateInput').focus();return;}if(formState.maloim===1&&!formState.maloimDate){showToast("Укажите дату для Малоимущие (действует до)","error");document.getElementById('maloimDateInput').focus();return;}var dup=clients.find(function(c){return c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===getPickerValue(classState)&&c.letter===getPickerValue(letterState);});if(dup){showToast('Ученик "'+surname+'" ('+dup.klass+dup.letter+') уже есть в списке',"error");return;}clients.push({klass:getPickerValue(classState),letter:getPickerValue(letterState),surname:surname,svo:formState.svo,mnogodet:formState.mnogodet,ovz:formState.ovz,ovzDate:formState.ovzDate,maloim:formState.maloim,maloimDate:formState.maloimDate});document.getElementById('surname').value='';formState={svo:0,mnogodet:0,ovz:0,maloim:0,ovzDate:'',maloimDate:''};document.querySelectorAll('.btn-cat').forEach(function(b){b.innerHTML='<i class="fa-solid fa-xmark"></i> Нет';b.classList.remove('active');});document.getElementById('ovzDateInput').value='';document.getElementById('ovzDateInput').setAttribute('disabled','disabled');document.getElementById('ovzDateGroup').classList.remove('enabled');document.getElementById('maloimDateInput').value='';document.getElementById('maloimDateInput').setAttribute('disabled','disabled');document.getElementById('maloimDateGroup').classList.remove('enabled');saveData();renderTable();showToast('Добавлен: '+getPickerValue(classState)+getPickerValue(letterState)+' — '+surname,'success');document.getElementById('surname').focus();}
@@ -332,12 +400,19 @@ function confirmClearAll(){if(_editingIndex>=0){showToast("Завершите р
 /* ===== Статистика ===== */
 function updateAllStats(){var pool=getFilteredForStats();var vals={total:pool.length,svo:pool.filter(function(c){return c.svo===1;}).length,mnogodet:pool.filter(function(c){return c.mnogodet===1;}).length,ovz:pool.filter(function(c){return c.ovz===1&&!isDateExpired(c.ovzDate);}).length,maloim:pool.filter(function(c){return c.maloim===1&&!isDateExpired(c.maloimDate);}).length,lgota:pool.filter(function(c){return c.svo===1||c.mnogodet===1||(c.ovz===1&&!isDateExpired(c.ovzDate))||(c.maloim===1&&!isDateExpired(c.maloimDate));}).length};document.getElementById('statTotal').textContent=vals.total;document.getElementById('statSvo').textContent=vals.svo;document.getElementById('statMnogodet').textContent=vals.mnogodet;document.getElementById('statOvz').textContent=vals.ovz;document.getElementById('statMaloim').textContent=vals.maloim;document.getElementById('statLgota').textContent=vals.lgota;var fIds=['fStatTotal','fStatSvo','fStatMnogodet','fStatOvz','fStatMaloim','fStatLgota'],fKeys=['total','svo','mnogodet','ovz','maloim','lgota'];for(var i=0;i<fIds.length;i++){var el=document.getElementById(fIds[i]);var nv=String(vals[fKeys[i]]);var ov=_prevStats[fKeys[i]]||'';el.textContent=nv;if(nv!==ov&&ov!==''){el.parentElement.classList.remove('flash');void el.parentElement.offsetWidth;el.parentElement.classList.add('flash');}}_prevStats=vals;}
 
-/* ===== Бейджи ===== */
+/* ===== Бейджи и ячейки ===== */
 function badgeHTML(val,expired){if(val===1){if(expired)return '<span class="badge badge-yes-expired badge-editable" title="Двойной клик — переключить">Да</span>';return '<span class="badge badge-yes badge-editable" title="Двойной клик — переключить">Да</span>';}return '<span class="badge badge-no badge-editable" title="Двойной клик — переключить">&mdash;</span>';}
 function klassBadge(val){if(val)return '<span class="klass-badge">'+escapeHTML(val)+'</span>';return '<span class="badge-no">&mdash;</span>';}
 function letterBadge(val){if(val)return '<span class="letter-badge">'+escapeHTML(val)+'</span>';return '<span class="badge-no">&mdash;</span>';}
 function formatDate(isoDate){if(!isoDate)return '';var p=isoDate.split('-');if(p.length!==3)return isoDate;return p[2]+'.'+p[1]+'.'+p[0];}
-function dateCellHTML(isoDate,clientIndex,dateField){if(!isoDate)return '<span class="date-cell">&mdash;</span>';if(isDateExpired(isoDate))return '<span class="date-cell date-expired" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span><span class="date-error-badge">ошибка!</span>';return '<span class="date-cell has-date" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span>';}
+
+/* Ячейка даты: учитывает просрочку (красный) и «истекает скоро» (жёлтый) */
+function dateCellHTML(isoDate,clientIndex,dateField){
+  if(!isoDate)return '<span class="date-cell">&mdash;</span>';
+  if(isDateExpired(isoDate))return '<span class="date-cell date-expired" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span><span class="date-error-badge">ошибка!</span>';
+  if(_datesChecked&&isDateNearExpiry(isoDate))return '<span class="date-cell date-near-expiry" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span><span class="date-warn-badge">внимание</span>';
+  return '<span class="date-cell has-date" style="cursor:pointer" data-idx="'+clientIndex+'" data-field="'+dateField+'" title="Двойной клик — изменить дату">'+formatDate(isoDate)+'</span>';
+}
 
 /* ===== Опции для select в редакторе ===== */
 function classOpts(sel){var h='';for(var i=1;i<=11;i++){var v=String(i);h+='<option value="'+v+'"'+(v===sel?' selected':'')+'>'+v+'</option>';}return h;}
@@ -381,135 +456,184 @@ function renderTable(){
       /* === ОБЫЧНЫЙ РЕЖИМ ОТОБРАЖЕНИЯ === */
       var ovzErr=c.ovz===1&&isDateExpired(c.ovzDate);
       var malErr=c.maloim===1&&isDateExpired(c.maloimDate);
+      var ovzWarn=_datesChecked&&c.ovz===1&&isDateNearExpiry(c.ovzDate);
+      var malWarn=_datesChecked&&c.maloim===1&&isDateNearExpiry(c.maloimDate);
       if(ovzErr||malErr) row.className='row-error';
+      else if(ovzWarn||malWarn) row.className='row-warn';
       row.innerHTML=
         '<td class="row-num">'+(ri+1)+'</td>'+
         '<td class="col-klass">'+klassBadge(c.klass)+'</td>'+
         '<td class="col-letter">'+letterBadge(c.letter)+'</td>'+
-        '<td style="font-weight:600;cursor:pointer" data-idx="'+ri+'" data-field="surname" class="editable-cell" title="Двойной клик — редактировать">'+escapeHTML(c.surname)+'</td>'+
-        '<td class="col-center" data-idx="'+ri+'" data-field="svo">'+badgeHTML(c.svo,false)+'</td>'+
-        '<td class="col-center" data-idx="'+ri+'" data-field="mnogodet">'+badgeHTML(c.mnogodet,false)+'</td>'+
-        '<td class="col-center" data-idx="'+ri+'" data-field="ovz">'+badgeHTML(c.ovz,ovzErr)+'</td>'+
+        '<td>'+escapeHTML(c.surname)+'</td>'+
+        '<td class="col-center">'+badgeHTML(c.svo,false)+'</td>'+
+        '<td class="col-center">'+badgeHTML(c.mnogodet,false)+'</td>'+
+        '<td class="col-center">'+badgeHTML(c.ovz,ovzErr)+'</td>'+
         '<td class="col-date">'+dateCellHTML(c.ovzDate,ri,'ovzDate')+'</td>'+
-        '<td class="col-center" data-idx="'+ri+'" data-field="maloim">'+badgeHTML(c.maloim,malErr)+'</td>'+
+        '<td class="col-center">'+badgeHTML(c.maloim,malErr)+'</td>'+
         '<td class="col-date">'+dateCellHTML(c.maloimDate,ri,'maloimDate')+'</td>'+
-        '<td style="white-space:nowrap"><button class="btn-edit" data-editidx="'+ri+'" title="Редактировать"><i class="fa-solid fa-pen"></i></button><button class="btn-del" data-delidx="'+ri+'" title="Удалить"><i class="fa-solid fa-xmark"></i></button></td>';
+        '<td style="white-space:nowrap"><button class="btn-edit" data-eidx="'+ri+'" title="Редактировать"><i class="fa-solid fa-pen"></i></button> <button class="btn-del" data-didx="'+ri+'" title="Удалить"><i class="fa-solid fa-trash"></i></button></td>';
       tbody.appendChild(row);
     }
   }
   updateAllStats();
-  bindInlineEditors();
 }
 
-/* ===== События строки редактирования ===== */
-function bindEditRowEvents(ri){
-  var row=document.querySelector('tr[data-rowidx="'+ri+'"]');
-  if(!row)return;
-
-  /* Синхронизация состояния с контролами */
-  var klassSel=row.querySelector('#eKlass');
-  var letterSel=row.querySelector('#eLetter');
-  var surnameInp=row.querySelector('#eSurname');
-  var ovzDateInp=row.querySelector('#eOvzDate');
-  var maloimDateInp=row.querySelector('#eMaloimDate');
-
-  if(klassSel)klassSel.onchange=function(){_editState.klass=this.value;};
-  if(letterSel)letterSel.onchange=function(){_editState.letter=this.value;};
-  if(surnameInp)surnameInp.oninput=function(){_editState.surname=this.value;};
-  if(ovzDateInp)ovzDateInp.onchange=function(){_editState.ovzDate=this.value;};
-  if(maloimDateInp)maloimDateInp.onchange=function(){_editState.maloimDate=this.value;};
-
-  /* Переключатели категорий */
-  var toggles=row.querySelectorAll('.edit-toggle[data-ef]');
-  for(var i=0;i<toggles.length;i++){
-    (function(btn){
-      btn.onclick=function(){
-        var f=btn.dataset.ef;
-        _editState[f]=_editState[f]===0?1:0;
-        if(f==='ovz'&&_editState.ovz===0){_editState.ovzDate='';ovzDateInp.value='';ovzDateInp.disabled=true;btn.className='edit-toggle off';btn.textContent='Нет';}
-        else if(f==='ovz'&&_editState.ovz===1){ovzDateInp.disabled=false;btn.className='edit-toggle';btn.textContent='Да';ovzDateInp.focus();}
-        else if(f==='maloim'&&_editState.maloim===0){_editState.maloimDate='';maloimDateInp.value='';maloimDateInp.disabled=true;btn.className='edit-toggle off';btn.textContent='Нет';}
-        else if(f==='maloim'&&_editState.maloim===1){maloimDateInp.disabled=false;btn.className='edit-toggle';btn.textContent='Да';maloimDateInp.focus();}
-        else{btn.className='edit-toggle'+(_editState[f]===0?' off':'');btn.textContent=_editState[f]===1?'Да':'Нет';}
-      };
-    })(toggles[i]);
-  }
-
-  /* Сохранение */
-  var saveBtn=row.querySelector('#eSaveBtn');
-  if(saveBtn)saveBtn.onclick=function(){saveRow(ri);};
-
-  /* Отмена */
-  var cancelBtn=row.querySelector('#eCancelBtn');
-  if(cancelBtn)cancelBtn.onclick=function(){cancelEdit();};
-
-  /* Клавиатура */
-  row.addEventListener('keydown',function(e){
-    if(e.key==='Escape'){e.preventDefault();cancelEdit();}
-    if(e.key==='Enter'&&e.target.tagName!=='SELECT'&&e.target.tagName!=='BUTTON'){e.preventDefault();saveRow(ri);}
+/* ===== Делегирование событий таблицы ===== */
+(function(){
+  var tbody=document.getElementById('tableBody');
+  /* Клик: редактирование / удаление */
+  tbody.addEventListener('click',function(e){
+    if(_suppressInlineBlur)return;
+    var editBtn=e.target.closest('.btn-edit');
+    if(editBtn){var idx=parseInt(editBtn.dataset.eidx,10);if(!isNaN(idx))startEditing(idx);return;}
+    var delBtn=e.target.closest('.btn-del');
+    if(delBtn){var didx=parseInt(delBtn.dataset.didx,10);if(!isNaN(didx))deleteClient(didx);return;}
   });
+  /* Двойной клик: переключение бейджей и редактирование дат */
+  tbody.addEventListener('dblclick',function(e){
+    if(_suppressInlineBlur||_editingIndex>=0)return;
+    var badge=e.target.closest('.badge-editable');
+    if(badge){
+      var row=badge.closest('tr');if(!row)return;
+      var ri=parseInt(row.dataset.rowidx,10);if(isNaN(ri))return;
+      var cell=badge.parentElement;
+      var ci=Array.prototype.indexOf.call(row.children,cell);
+      var fieldMap={4:'svo',5:'mnogodet',6:'ovz',8:'maloim'};
+      var field=fieldMap[ci];
+      if(field){toggleInlineField(ri,field);}
+      return;
+    }
+    var dateCell=e.target.closest('.date-cell[data-field]');
+    if(dateCell){
+      var row2=dateCell.closest('tr');if(!row2)return;
+      var ri2=parseInt(row2.dataset.rowidx,10);
+      var df=dateCell.dataset.field;
+      if(df&&!isNaN(ri2))startInlineDateEdit(ri2,df,dateCell);
+      return;
+    }
+  });
+})();
 
-  /* Фокус на фамилию */
-  setTimeout(function(){if(surnameInp)surnameInp.focus();},30);
+/* ===== Инлайн-переключение бейджей ===== */
+function toggleInlineField(ri,field){
+  var c=clients[ri];
+  if(field==='ovz'){
+    if(c.ovz===1){c.ovz=0;c.ovzDate='';}
+    else{c.ovz=1;/* дата останется пустой — пользователь может dblclick по ячейке даты */}
+  }else if(field==='maloim'){
+    if(c.maloim===1){c.maloim=0;c.maloimDate='';}
+    else{c.maloim=1;}
+  }else{
+    c[field]=c[field]===0?1:0;
+  }
+  saveData();renderTable();
 }
 
-/* ===== Сохранение отредактированной строки ===== */
-function saveRow(index){
-  var es=_editState;
-  var surname=es.surname.trim();
-  if(!surname){showToast("Фамилия не может быть пустой","error");var inp=document.getElementById('eSurname');if(inp)inp.focus();return;}
-  if(es.ovz===1&&!es.ovzDate){showToast("Укажите дату для ОВЗ (действует до)","error");var inp2=document.getElementById('eOvzDate');if(inp2)inp2.focus();return;}
-  if(es.maloim===1&&!es.maloimDate){showToast("Укажите дату для Малоимущие (действует до)","error");var inp3=document.getElementById('eMaloimDate');if(inp3)inp3.focus();return;}
-  var dup=clients.find(function(c,ci){return ci!==index&&c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===es.klass&&c.letter===es.letter;});
-  if(dup){showToast('Ученик "'+surname+'" ('+es.klass+es.letter+') уже есть в списке','error');return;}
-  clients[index]={klass:es.klass,letter:es.letter,surname:surname,svo:es.svo,mnogodet:es.mnogodet,ovz:es.ovz,ovzDate:es.ovzDate,maloim:es.maloim,maloimDate:es.maloimDate};
-  _editingIndex=-1;_editState={};
-  saveData();renderTable();showToast('Изменено: '+es.klass+es.letter+' — '+surname,'success');
+/* ===== Инлайн-редактирование даты по dblclick ===== */
+function startInlineDateEdit(ri,field,cellEl){
+  var c=clients[ri];var currentVal=c[field]||'';
+  var td=cellEl.parentElement;
+  var input=document.createElement('input');input.type='date';
+  input.className='cell-edit-date';input.value=currentVal;input.style.width='100%';
+  td.innerHTML='';td.appendChild(input);input.focus();
+  _suppressInlineBlur=true;
+  function finish(){
+    var newVal=input.value||'';c[field]=newVal;
+    _suppressInlineBlur=false;saveData();renderTable();
+  }
+  input.addEventListener('change',finish);
+  input.addEventListener('blur',function(){setTimeout(function(){if(_suppressInlineBlur)finish();},150);});
+  input.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();finish();}if(e.key==='Escape'){_suppressInlineBlur=false;renderTable();}});
 }
 
-/* ===== Отмена редактирования ===== */
-function cancelEdit(){_editingIndex=-1;_editState={};renderTable();}
-
-/* ===== Вход в режим редактирования ===== */
-function editRow(index){
-  if(_editingIndex===index)return;
-  _editingIndex=index;
+/* ===== Полнострочное редактирование ===== */
+function startEditing(index){
+  if(_editingIndex>=0){showToast('Сначала завершите текущее редактирование','error');return;}
   var c=clients[index];
+  _editingIndex=index;
   _editState={klass:c.klass,letter:c.letter,surname:c.surname,svo:c.svo,mnogodet:c.mnogodet,ovz:c.ovz,ovzDate:c.ovzDate,maloim:c.maloim,maloimDate:c.maloimDate};
   renderTable();
+  var el=document.getElementById('eSurname');if(el)el.focus();
+}
+function bindEditRowEvents(ri){
+  var row=document.querySelector('tr[data-rowidx="'+ri+'"]');if(!row)return;
+  row.querySelectorAll('.edit-toggle').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var f=this.dataset.ef;_editState[f]=_editState[f]===0?1:0;
+      this.textContent=_editState[f]===1?'Да':'Нет';this.classList.toggle('off',_editState[f]===0);
+      if(f==='ovz'){var di=document.getElementById('eOvzDate');if(_editState.ovz===1){di.removeAttribute('disabled');}else{di.setAttribute('disabled','disabled');di.value='';_editState.ovzDate='';}}
+      if(f==='maloim'){var di2=document.getElementById('eMaloimDate');if(_editState.maloim===1){di2.removeAttribute('disabled');}else{di2.setAttribute('disabled','disabled');di2.value='';_editState.maloimDate='';}}
+    });
+  });
+  var ovzD=document.getElementById('eOvzDate');if(ovzD)ovzD.addEventListener('change',function(){_editState.ovzDate=this.value||'';});
+  var malD=document.getElementById('eMaloimDate');if(malD)malD.addEventListener('change',function(){_editState.maloimDate=this.value||'';});
+  document.getElementById('eSaveBtn').addEventListener('click',function(){saveEdit(ri);});
+  document.getElementById('eCancelBtn').addEventListener('click',function(){cancelEdit();});
+  row.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();saveEdit(ri);}if(e.key==='Escape'){e.preventDefault();cancelEdit();}});
+}
+function saveEdit(ri){
+  var surname=document.getElementById('eSurname').value.trim();
+  if(!surname){showToast('Фамилия не может быть пустой','error');document.getElementById('eSurname').focus();return;}
+  var klass=document.getElementById('eKlass').value;var letter=document.getElementById('eLetter').value;
+  if(_editState.ovz===1&&!_editState.ovzDate){showToast('Укажите дату для ОВЗ','error');document.getElementById('eOvzDate').focus();return;}
+  if(_editState.maloim===1&&!_editState.maloimDate){showToast('Укажите дату для Малоимущие','error');document.getElementById('eMaloimDate').focus();return;}
+  var dup=clients.find(function(c,idx){return idx!==ri&&c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===klass&&c.letter===letter;});
+  if(dup){showToast('Ученик "'+surname+'" ('+klass+letter+') уже есть в списке','error');return;}
+  clients[ri].klass=klass;clients[ri].letter=letter;clients[ri].surname=surname;
+  clients[ri].svo=_editState.svo;clients[ri].mnogodet=_editState.mnogodet;
+  clients[ri].ovz=_editState.ovz;clients[ri].ovzDate=_editState.ovzDate;
+  clients[ri].maloim=_editState.maloim;clients[ri].maloimDate=_editState.maloimDate;
+  _editingIndex=-1;_editState={};saveData();renderTable();showToast('Запись обновлена','success');
+}
+function cancelEdit(){_editingIndex=-1;_editState={};renderTable();}
+
+/* ===== Excel: выгрузка ===== */
+function exportToExcel(){
+  if(clients.length===0){showToast('Нет данных для выгрузки','error');return;}
+  var data=clients.map(function(c,i){return{'№':i+1,'Класс':c.klass,'Буква':c.letter,'Фамилия':c.surname,'СВО':c.svo===1?'Да':'Нет','Многодетные':c.mnogodet===1?'Да':'Нет','ОВЗ':c.ovz===1?'Да':'Нет','ОВЗ дата':c.ovzDate?formatDate(c.ovzDate):'','Малоимущие':c.maloim===1?'Да':'Нет','Малоим. дата':c.maloimDate?formatDate(c.maloimDate):''};});
+  var ws=XLSX.utils.json_to_sheet(data);var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Ученики');
+  XLSX.writeFile(wb,'питание_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  showToast('Выгружено '+clients.length+' записей','success');
 }
 
-/* ===== Делегированные клики по таблице ===== */
-document.getElementById('tableBody').addEventListener('mousedown',function(e){
-  var delBtn=e.target.closest('.btn-del');
-  if(delBtn){e.preventDefault();var idx=parseInt(delBtn.dataset.delidx,10);if(!isNaN(idx)&&idx>=0&&idx<clients.length)deleteClient(idx);return;}
-  var editBtn=e.target.closest('.btn-edit');
-  if(editBtn){e.preventDefault();var idx2=parseInt(editBtn.dataset.editidx,10);if(!isNaN(idx2)&&idx2>=0&&idx2<clients.length)editRow(idx2);return;}
-});
-
-/* ===== Инлайн-редактирование (двойной клик) ===== */
-function bindInlineEditors(){
-  var tbody=document.getElementById('tableBody');
-  var badgeCells=tbody.querySelectorAll('td[data-field="svo"],td[data-field="mnogodet"],td[data-field="ovz"],td[data-field="maloim"]');
-  for(var i=0;i<badgeCells.length;i++){(function(td){td.addEventListener('dblclick',function(){var idx=parseInt(td.dataset.idx,10);if(idx===_editingIndex)return;var field=td.dataset.field;var c=clients[idx];if(!c)return;c[field]=c[field]===0?1:0;if(field==='ovz'&&c.ovz===0)c.ovzDate='';if(field==='maloim'&&c.maloim===0)c.maloimDate='';if(field==='ovz'&&c.ovz===1&&!c.ovzDate){saveData();renderTable();showToast('ОВЗ включено. Укажите дату (двойной клик на ячейку даты)','info');return;}if(field==='maloim'&&c.maloim===1&&!c.maloimDate){saveData();renderTable();showToast('Малоимущие включено. Укажите дату (двойной клик на ячейку даты)','info');return;}saveData();renderTable();});})(badgeCells[i]);}
-  var nameCells=tbody.querySelectorAll('td.editable-cell');
-  for(var i=0;i<nameCells.length;i++){(function(td){td.addEventListener('dblclick',function(){var idx=parseInt(td.dataset.idx,10);if(idx===_editingIndex)return;var c=clients[idx];if(!c)return;var oldVal=c.surname;var input=document.createElement('input');input.type='text';input.className='cell-edit-input';input.value=oldVal;td.textContent='';td.appendChild(input);input.focus();input.select();var done=false;function save(){if(done)return;done=true;if(_suppressInlineBlur){renderTable();return;}var newVal=input.value.trim();if(newVal&&newVal!==oldVal){var dup=clients.find(function(cc,ci){return ci!==idx&&cc.surname.toLowerCase()===newVal.toLowerCase()&&cc.klass===c.klass&&cc.letter===c.letter;});if(dup)showToast('Ученик "'+newVal+'" ('+c.klass+c.letter+') уже есть в списке','error');else{c.surname=newVal;showToast('Фамилия изменена на "'+newVal+'"','success');}saveData();}renderTable();}function cancel(){if(done)return;done=true;renderTable();}input.addEventListener('blur',save);input.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();input.removeEventListener('blur',save);save();}if(ev.key==='Escape'){ev.preventDefault();input.removeEventListener('blur',save);cancel();}});});})(nameCells[i]);}
-  var dateSpans=tbody.querySelectorAll('.date-cell[data-idx]');
-  for(var i=0;i<dateSpans.length;i++){(function(span){span.addEventListener('dblclick',function(){var idx=parseInt(span.dataset.idx,10);if(idx===_editingIndex)return;var field=span.dataset.field;var c=clients[idx];if(!c)return;var catField=field==='ovzDate'?'ovz':'maloim';if(c[catField]!==1){showToast('Сначала включите '+(catField==='ovz'?'ОВЗ':'Малоимущие')+' (двойной клик на бейдж)','info');return;}var td=span.parentNode;var oldVal=c[field];var input=document.createElement('input');input.type='date';input.className='cell-edit-date';input.value=oldVal||'';td.innerHTML='';td.appendChild(input);input.focus();var done=false;function save(){if(done)return;done=true;if(_suppressInlineBlur){renderTable();return;}var newVal=input.value||'';if(newVal!==oldVal){c[field]=newVal;if(newVal)showToast('Дата изменена на '+formatDate(newVal),'success');else showToast('Дата удалена','info');saveData();}renderTable();}function cancel(){if(done)return;done=true;renderTable();}input.addEventListener('blur',save);input.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();input.removeEventListener('blur',save);save();}if(ev.key==='Escape'){ev.preventDefault();input.removeEventListener('blur',save);cancel();}});input.addEventListener('change',function(){if(done)return;done=true;if(_suppressInlineBlur){renderTable();return;}var newVal=input.value||'';if(newVal!==oldVal){c[field]=newVal;if(newVal)showToast('Дата изменена на '+formatDate(newVal),'success');else showToast('Дата удалена','info');saveData();}renderTable();});});})(dateSpans[i]);}
+/* ===== Excel: загрузка ===== */
+function importFromExcel(event){
+  var file=event.target.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var data=new Uint8Array(e.target.result);var wb=XLSX.read(data,{type:'array'});
+      var sheet=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(sheet,{defval:''});
+      var added=0,skipped=0;
+      for(var i=0;i<rows.length;i++){
+        var r=rows[i];
+        var surname=String(r['Фамилия']||r['фамилия']||'').trim();if(!surname){skipped++;continue;}
+        var klass=String(r['Класс']||r['класс']||'').trim();var letter=String(r['Буква']||r['буква']||'').trim();
+        if(!klass||!letter){skipped++;continue;}
+        var dup=clients.find(function(c){return c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===klass&&c.letter===letter;});
+        if(dup){skipped++;continue;}
+        var svo=parseYesNo(r['СВО']||r['сво']);var mnogodet=parseYesNo(r['Многодетные']||r['многодетные']);
+        var ovz=parseYesNo(r['ОВЗ']||r['овз']);var maloim=parseYesNo(r['Малоимущие']||r['малоимущие']);
+        var ovzDate=parseDateFromExcel(r['ОВЗ дата']||r['овз дата']);
+        var maloimDate=parseDateFromExcel(r['Малоим. дата']||r['малоим. дата']||r['Малоимущие дата']);
+        clients.push({klass:klass,letter:letter,surname:surname,svo:svo,mnogodet:mnogodet,ovz:ovz,ovzDate:ovzDate,maloim:maloim,maloimDate:maloimDate});
+        added++;
+      }
+      saveData();renderTable();
+      showToast('Импортировано: '+added+(skipped>0?', пропущено: '+skipped:''),added>0?'success':'error');
+    }catch(err){showToast('Ошибка чтения файла: '+err.message,'error');}
+  };
+  reader.readAsArrayBuffer(file);event.target.value='';
 }
-
-function escapeHTML(str){var div=document.createElement('div');div.appendChild(document.createTextNode(str));return div.innerHTML;}
-document.getElementById('surname').addEventListener('keydown',function(e){if(e.key==='Enter')addClient();});
-
-/* ===== Парсинг / форматирование дат ===== */
-function parseExcelDate(val){if(val===undefined||val===null||val==='')return '';var s=val.toString().trim();if(s==='*'||s==='-'||s==='—')return '';if(typeof val==='number'||(typeof val==='string'&&/^\d+$/.test(s))){var num=parseFloat(s);if(num>40000&&num<60000){var d=new Date((num-25569)*86400*1000);if(!isNaN(d.getTime()))return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}}var parts=s.split(/[\/\.\-]/);if(parts.length===3){var y=parseInt(parts[0],10),m=parseInt(parts[1],10),d=parseInt(parts[2],10);if(y>100&&m>=1&&m<=12&&d>=1&&d<=31)return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');}var d=new Date(s);if(!isNaN(d.getTime()))return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');return '';}
-function formatDateForExcel(isoDate){if(!isoDate)return '';var p=isoDate.split('-');if(p.length!==3)return isoDate;return p[0]+'/'+parseInt(p[1],10)+'/'+parseInt(p[2],10);}
-
-/* ===== Импорт из Excel ===== */
-function importFromExcel(event){if(_editingIndex>=0){showToast("Завершите редактирование перед импортом","error");event.target.value='';return;}var file=event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var data=new Uint8Array(e.target.result);var wb=XLSX.read(data,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var json=XLSX.utils.sheet_to_json(ws,{defval:''});if(json.length===0){showToast('Файл пуст','error');return;}var imported=0,skipped=0;for(var i=0;i<json.length;i++){var row=json[i];var surname=(row['Фамилия']||'').toString().trim();if(!surname)continue;if(clients.find(function(c){return c.surname.toLowerCase()===surname.toLowerCase();})){skipped++;continue;}var klass=(row['класс']||'').toString().trim();var letter=(row['буква']||'').toString().trim().toUpperCase();var kn=parseInt(klass,10);if(!isNaN(kn)&&kn>=1&&kn<=11)klass=String(kn);var ovzV=(parseFloat(row['овз'])===1)?1:0;var malV=(parseFloat(row['малоимущие'])===1)?1:0;clients.push({klass:klass,letter:letter,surname:surname,svo:(parseFloat(row['сво'])===1)?1:0,mnogodet:(parseFloat(row['многодетные'])===1)?1:0,ovz:ovzV,ovzDate:ovzV===1?parseExcelDate(row['овз дата']):'',maloim:malV,maloimDate:malV===1?parseExcelDate(row['малоимущие дата']):''});imported++;}saveData();renderTable();var msg='Загружено: '+imported;if(skipped>0)msg+=', пропущено (дубликаты): '+skipped;showToast(msg,'success');}catch(error){console.error('Ошибка чтения:',error);showToast('Ошибка при чтении файла','error');}};reader.readAsArrayBuffer(file);event.target.value='';}
-
-/* ===== Экспорт в Excel ===== */
-function exportToExcel(){if(_editingIndex>=0){showToast("Завершите редактирование перед выгрузкой","error");return;}var btn=document.getElementById('exportBtn');if(clients.length===0){showToast('Список пуст, нечего выгружать','error');return;}try{btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Формирование...';var data=clients.map(function(c){return{'класс':c.klass||'','буква':c.letter||'','Фамилия':c.surname,'сво':c.svo,'многодетные':c.mnogodet,'овз':c.ovz,'овз дата':c.ovzDate?formatDateForExcel(c.ovzDate):'*','малоимущие':c.maloim,'малоимущие дата':c.maloimDate?formatDateForExcel(c.maloimDate):'*'};});var wb=XLSX.utils.book_new();var ws=XLSX.utils.json_to_sheet(data);ws['!cols']=[{wch:8},{wch:8},{wch:25},{wch:8},{wch:14},{wch:8},{wch:14},{wch:14},{wch:16}];XLSX.utils.book_append_sheet(wb,ws,'Лист1');XLSX.writeFile(wb,'питание2_ready.xlsx');showToast('Файл успешно выгружен','success');}catch(error){console.error('Ошибка выгрузки:',error);showToast('Ошибка при выгрузке файла','error');}finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-file-export"></i> Выгрузить Excel';}}
+function parseYesNo(val){if(!val)return 0;var s=String(val).trim().toLowerCase();return(s==='да'||s==='1'||s==='yes'||s==='true')?1:0;}
+function parseDateFromExcel(val){
+  if(!val)return '';var s=String(val).trim();
+  var m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if(m)return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;
+  var num=Number(val);if(!isNaN(num)&&num>40000&&num<60000){var d=new Date((num-25569)*86400*1000);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  return '';
+}
 </script>
 </body>
 </html>

@@ -162,8 +162,6 @@ tr.row-removing{animation:rowOut 0.4s ease forwards;overflow:hidden;pointer-even
 .form-stat-chip.cs-total .chip-num{color:var(--fg);}.form-stat-chip.cs-svo .chip-num{color:var(--danger);}.form-stat-chip.cs-mnogodet .chip-num{color:var(--warn);}.form-stat-chip.cs-ovz .chip-num{color:var(--purple);}.form-stat-chip.cs-maloim .chip-num{color:var(--blue);}.form-stat-chip.cs-lgota .chip-num{color:var(--orange);}
 @keyframes chipFlash{0%{transform:scale(1);}30%{transform:scale(1.12);border-color:var(--accent);}100%{transform:scale(1);}}
 .form-stat-chip.flash{animation:chipFlash 0.4s ease;}
-
-/* ===== Спойлер ===== */
 .spoiler-card .card-header{cursor:pointer;user-select:none;-webkit-user-select:none;transition:background 0.2s;}
 .spoiler-card .card-header:hover{background:rgba(255,255,255,0.02);}
 .spoiler-chevron{margin-left:auto;font-size:13px;color:var(--fg-muted);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1),color 0.2s;order:10;}
@@ -176,7 +174,6 @@ tr.row-removing{animation:rowOut 0.4s ease forwards;overflow:hidden;pointer-even
 .spoiler-card.open .spoiler-body{padding:20px;border-top-color:var(--border);}
 .spoiler-hint{font-size:11px;color:var(--fg-muted);font-weight:400;margin-left:8px;opacity:0.6;transition:opacity 0.2s;}
 .spoiler-card .card-header:hover .spoiler-hint{opacity:1;}
-
 @media(max-width:768px){.stats-row{grid-template-columns:repeat(3,1fr);}.form-grid{grid-template-columns:1fr;gap:8px;}.form-grid>label{text-align:left;}.controls{gap:6px;}.search-box{margin-left:0;width:100%;margin-top:6px;}.search-box input{width:100%;}.search-box input:focus{width:100%;}.header h1{font-size:22px;}.scrollbox-full-row{flex-direction:column;gap:12px;}.class-filter-bar{gap:6px;}.class-filter-btn{width:32px;height:32px;font-size:13px;}.cat-date-row{flex-direction:column;align-items:flex-start;gap:8px;}.form-stats-row{gap:6px;padding:8px 10px;}.form-stat-chip{padding:4px 8px;font-size:10px;}.form-stat-chip .chip-num{font-size:13px;}}
 @media(max-width:480px){.stats-row{grid-template-columns:repeat(2,1fr);}body{padding:12px;}.class-filter-btn{width:28px;height:28px;font-size:12px;border-radius:6px;}.class-filter-btn.active::after{font-size:6px;top:2px;right:2px;}}
 </style>
@@ -365,73 +362,97 @@ function checkAllDates(){_datesChecked=true;var expired=[],nearExpiry=[];for(var
 /* ===== Добавление ученика ===== */
 function addClient(){var surname=document.getElementById('surname').value.trim();if(!surname){showToast("Введите фамилию ученика","error");document.getElementById('surname').focus();return;}if(formState.ovz===1&&!formState.ovzDate){showToast("Укажите дату для ОВЗ (действует до)","error");document.getElementById('ovzDateInput').focus();return;}if(formState.maloim===1&&!formState.maloimDate){showToast("Укажите дату для Малоимущие (действует до)","error");document.getElementById('maloimDateInput').focus();return;}var dup=clients.find(function(c){return c.surname.toLowerCase()===surname.toLowerCase()&&c.klass===getPickerValue(classState)&&c.letter===getPickerValue(letterState);});if(dup){showToast('Ученик "'+surname+'" ('+dup.klass+dup.letter+') уже есть в списке',"error");return;}clients.push({klass:getPickerValue(classState),letter:getPickerValue(letterState),surname:surname,svo:formState.svo,mnogodet:formState.mnogodet,ovz:formState.ovz,ovzDate:formState.ovzDate,maloim:formState.maloim,maloimDate:formState.maloimDate});document.getElementById('surname').value='';formState={svo:0,mnogodet:0,ovz:0,maloim:0,ovzDate:'',maloimDate:''};document.querySelectorAll('.btn-cat').forEach(function(b){b.innerHTML='<i class="fa-solid fa-xmark"></i> Нет';b.classList.remove('active');});document.getElementById('ovzDateInput').value='';document.getElementById('ovzDateInput').setAttribute('disabled','disabled');document.getElementById('ovzDateGroup').classList.remove('enabled');document.getElementById('maloimDateInput').value='';document.getElementById('maloimDateInput').setAttribute('disabled','disabled');document.getElementById('maloimDateGroup').classList.remove('enabled');saveData();renderTable();showToast('Добавлен: '+getPickerValue(classState)+getPickerValue(letterState)+' — '+surname,'success');document.getElementById('surname').focus();}
 
-/* ===== Удаление одной записи ===== */
-function deleteClient(index){if(_editingIndex>=0){showToast("Завершите редактирование перед удалением","error");return;}var c=clients[index];if(!c)return;var name=c.klass+c.letter+' '+c.surname;_suppressInlineBlur=true;var tags=[];if(c.svo===1)tags.push('<span style="color:var(--danger);font-weight:700">СВО</span>');if(c.mnogodet===1)tags.push('<span style="color:var(--warn);font-weight:700">Многодетные</span>');if(c.ovz===1)tags.push('<span style="color:'+(isDateExpired(c.ovzDate)?'var(--danger)':'var(--purple)')+';font-weight:700">ОВЗ'+(isDateExpired(c.ovzDate)?' (проср.)':'')+'</span>');if(c.maloim===1)tags.push('<span style="color:'+(isDateExpired(c.maloimDate)?'var(--danger)':'var(--blue)')+';font-weight:700">Малоим.'+(isDateExpired(c.maloimDate)?' (проср.)':'')+'</span>');var tagsStr=tags.length>0?'<div style="margin-top:6px;font-size:12px;color:var(--fg-muted)">'+tags.join(' &middot; ')+'</div>':'';var previewHTML='<div class="modal-pupil-preview"><span class="preview-badge">'+escapeHTML(c.klass)+'</span><span class="preview-badge">'+escapeHTML(c.letter)+'</span><span class="preview-name">'+escapeHTML(c.surname)+'</span></div>'+tagsStr;showModal('Удаление записи','Удалить этого ученика из списка?',function(){var row=document.querySelector('tr[data-rowidx="'+index+'"]');if(row){row.classList.add('row-removing');setTimeout(function(){clients.splice(index,1);saveData();renderTable();showToast('Удалён: '+name,'info');_suppressInlineBlur=false;},400);}else{clients.splice(index,1);saveData();renderTable();showToast('Удалён: '+name,'info');_suppressInlineBlur=false;}},previewHTML);var origClose=closeModal;closeModal=function(){origClose();_suppressInlineBlur=false;closeModal=origClose;};}
+/* ===== Удаление одной записи — исправленная версия ===== */
+function deleteClient(index){
+  if(_editingIndex>=0){showToast("Завершите редактирование перед удалением","error");return;}
+  var c=clients[index];
+  if(!c)return;
+  var name=c.klass+c.letter+' '+c.surname;
+  _suppressInlineBlur=true;
 
-/* ===== Очистка всего списка — исправленная версия ===== */
-function confirmClearAll(){
-  /* 1. Принудительно прерываем любое активное редактирование */
-  _editingIndex = -1;
-  _editState = {};
-  _suppressInlineBlur = false;
+  /* Собираем теги категорий для превью */
+  var tags=[];
+  if(c.svo===1)tags.push('<span style="color:var(--danger);font-weight:700">СВО</span>');
+  if(c.mnogodet===1)tags.push('<span style="color:var(--warn);font-weight:700">Многодетные</span>');
+  if(c.ovz===1)tags.push('<span style="color:'+(isDateExpired(c.ovzDate)?'var(--danger)':'var(--purple)')+';font-weight:700">ОВЗ'+(isDateExpired(c.ovzDate)?' (проср.)':'')+'</span>');
+  if(c.maloim===1)tags.push('<span style="color:'+(isDateExpired(c.maloimDate)?'var(--danger)':'var(--blue)')+';font-weight:700">Малоим.'+(isDateExpired(c.maloimDate)?' (проср.)':'')+'</span>');
+  var tagsStr=tags.length>0?'<div style="margin-top:6px;font-size:12px;color:var(--fg-muted)">'+tags.join(' &middot; ')+'</div>':'';
+  var previewHTML='<div class="modal-pupil-preview"><span class="preview-badge">'+escapeHTML(c.klass)+'</span><span class="preview-badge">'+escapeHTML(c.letter)+'</span><span class="preview-name">'+escapeHTML(c.surname)+'</span></div>'+tagsStr;
 
-  /* 2. Закрываем модалку если она случайно осталась открытой */
-  document.getElementById('modalOverlay').classList.remove('active');
-  modalCallback = null;
+  /*
+   * НЕ используем showModal() — она внутри onclick вызывает closeModal(),
+   * которая обнуляет modalCallback ДО его выполнения, и удаление
+   * никогда не происходит. Настраиваем модалку вручную.
+   */
+  var confirmBtn=document.getElementById('modalConfirmBtn');
+  var origBtnText=confirmBtn.textContent;
+  var savedOrigBody=document.getElementById('modalBody').innerHTML;
 
-  /* 3. Если список уже пуст — уведомляем и выходим */
-  if(clients.length === 0){
-    showToast('Список уже пуст','info');
-    return;
-  }
-
-  /* 4. Настраиваем модалку вручную, НЕ через showModal().
-     Это критично: showModal() внутри своего onclick вызывает closeModal(),
-     которая обнуляет modalCallback ДО его выполнения — коллбэк никогда
-     не срабатывал и список не очищался. */
-  var confirmBtn = document.getElementById('modalConfirmBtn');
-  var origBtnText = confirmBtn.textContent;
-  var savedOrigBody = document.getElementById('modalBody').innerHTML;
-
-  /* Заполняем модалку */
-  document.getElementById('modalTitle').textContent = 'Очистка списка';
-  document.getElementById('modalBody').innerHTML =
-    '<p id="modalText">Удалить всех ' + clients.length + ' учеников? Действие нельзя отменить.</p>';
-  confirmBtn.textContent = 'Очистить';
+  document.getElementById('modalTitle').textContent='Удаление записи';
+  document.getElementById('modalBody').innerHTML=previewHTML+'<p id="modalText" style="margin-top:0">Удалить этого ученика из списка?</p>';
+  confirmBtn.textContent='Удалить';
   document.getElementById('modalOverlay').classList.add('active');
 
-  /* 5. Привязываем обработчик: СНАЧАЛА очистка, ПОТОМ закрытие */
-  confirmBtn.onclick = function(){
-    /* Очищаем массив данных */
-    clients = [];
-
-    /* Сбрасываем состояние интерфейса */
-    resetClassFilter();
-    document.getElementById('searchInput').value = '';
-    _datesChecked = false;
-
-    /* Сохраняем и перерисовываем — таблица станет пустой */
-    saveData();
-    renderTable();
-
-    /* Закрываем модалку вручную (без обнуления callback) */
+  /* Кнопка «Удалить»: СНАЧАЛА удаление, ПОТОМ закрытие модалки */
+  confirmBtn.onclick=function(){
+    var row=document.querySelector('tr[data-rowidx="'+index+'"]');
+    if(row){
+      /* Анимация удаления строки */
+      row.classList.add('row-removing');
+      setTimeout(function(){
+        clients.splice(index,1);
+        saveData();
+        renderTable();
+        showToast('Удалён: '+name,'info');
+        _suppressInlineBlur=false;
+      },400);
+    }else{
+      /* Если строка не найдена в DOM — удаляем напрямую */
+      clients.splice(index,1);
+      saveData();
+      renderTable();
+      showToast('Удалён: '+name,'info');
+      _suppressInlineBlur=false;
+    }
+    /* Закрываем модалку вручную */
     document.getElementById('modalOverlay').classList.remove('active');
-    document.getElementById('modalBody').innerHTML = savedOrigBody;
-    modalCallback = null;
+    document.getElementById('modalBody').innerHTML=savedOrigBody;
+    modalCallback=null;
+    confirmBtn.textContent=origBtnText;
+  };
 
-    /* Возвращаем текст кнопки */
-    confirmBtn.textContent = origBtnText;
+  /* Обработка закрытия по «Отмена», клику по фону или Esc */
+  var realCloseModal=closeModal;
+  closeModal=function(){
+    realCloseModal();
+    _suppressInlineBlur=false;
+    confirmBtn.textContent=origBtnText;
+    closeModal=realCloseModal;
+  };
+}
 
+/* ===== Очистка всего списка ===== */
+function confirmClearAll(){
+  _editingIndex=-1;_editState={};_suppressInlineBlur=false;
+  document.getElementById('modalOverlay').classList.remove('active');modalCallback=null;
+  if(clients.length===0){showToast('Список уже пуст','info');return;}
+  var confirmBtn=document.getElementById('modalConfirmBtn');
+  var origBtnText=confirmBtn.textContent;
+  var savedOrigBody=document.getElementById('modalBody').innerHTML;
+  document.getElementById('modalTitle').textContent='Очистка списка';
+  document.getElementById('modalBody').innerHTML='<p id="modalText">Удалить всех '+clients.length+' учеников? Действие нельзя отменить.</p>';
+  confirmBtn.textContent='Очистить';
+  document.getElementById('modalOverlay').classList.add('active');
+  confirmBtn.onclick=function(){
+    clients=[];resetClassFilter();document.getElementById('searchInput').value='';_datesChecked=false;
+    saveData();renderTable();
+    document.getElementById('modalOverlay').classList.remove('active');
+    document.getElementById('modalBody').innerHTML=savedOrigBody;modalCallback=null;
+    confirmBtn.textContent=origBtnText;
     showToast('Список полностью очищен','info');
   };
-
-  /* 6. Корректная обработка закрытия модалки по «Отмена», клику по фону или Esc */
-  var realCloseModal = closeModal;
-  closeModal = function(){
-    realCloseModal();
-    confirmBtn.textContent = origBtnText;
-    closeModal = realCloseModal;
-  };
+  var realCloseModal=closeModal;
+  closeModal=function(){realCloseModal();confirmBtn.textContent=origBtnText;closeModal=realCloseModal;};
 }
 
 /* ===== Статистика ===== */

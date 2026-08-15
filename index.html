@@ -30,14 +30,10 @@ body::after{content:'';position:fixed;bottom:-30%;right:-10%;width:500px;height:
 .stat-tile .stat-num{font-size:32px;font-weight:900;line-height:1;margin-bottom:6px;transition:opacity 0.3s;}
 .stat-tile .stat-label{font-size:12px;color:var(--fg-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;transition:opacity 0.3s;}
 .stat-tile.total .stat-num{color:var(--fg);}.stat-tile.svo .stat-num{color:var(--danger);}.stat-tile.mnogodet .stat-num{color:var(--warn);}.stat-tile.ovz .stat-num{color:var(--purple);}.stat-tile.maloim .stat-num{color:var(--blue);}.stat-tile.lgota .stat-num{color:var(--orange);}
-
-/* --- Исключённая плашка: кликабельный чекбокс, приглушённый вид --- */
 .stat-tile.cat-excluded{opacity:0.3;}
 .stat-tile.cat-excluded:hover{transform:none;border-color:var(--border);opacity:0.5;}
 .stat-tile.cat-excluded .stat-num,
 .stat-tile.cat-excluded .stat-label{pointer-events:none;}
-
-/* --- Чекбокс на плашке --- */
 .stat-cb{position:absolute;top:7px;right:7px;display:flex;align-items:center;justify-content:center;z-index:2;cursor:pointer;}
 .stat-cb input{display:none;}
 .stat-cb .cb-mark{width:15px;height:15px;border:1.5px solid var(--border);border-radius:4px;background:var(--bg2);display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-size:0;color:transparent;}
@@ -45,7 +41,6 @@ body::after{content:'';position:fixed;bottom:-30%;right:-10%;width:500px;height:
 .stat-cb input:checked+.cb-mark::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;font-size:8px;}
 .stat-cb input:disabled+.cb-mark{opacity:0.3;cursor:default;}
 .stat-cb:hover .cb-mark{border-color:#4a4f68;}
-
 .filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 20px;border-top:1px solid var(--border);background:rgba(22,24,34,0.5);}
 .filter-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--fg-muted);margin-right:4px;white-space:nowrap;}
 .filter-btn{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--fg-muted);font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:all 0.2s;position:relative;user-select:none;-webkit-user-select:none;}
@@ -332,9 +327,20 @@ var _datesChecked = false;
 var _spoilerOpen = false;
 var classFilter = {};
 var letterFilter = {};
+/* statCatFilter хранит фактические значения для фильтрации.
+   «С льготой» вычисляется из источников автоматически. */
 var statCatFilter = { svo: true, mnogodet: true, ovz: true, maloim: true, lgota: true };
+
+/* Четыре категории-источники для «С льготой» */
+var SOURCE_CATS = ['svo', 'mnogododet', 'ovz', 'maloim'];
+
 var ALL_LETTERS = ['А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М'];
 var ALL_CLASSES = ['1','2','3','4','5','6','7','8','9','10','11'];
+
+/* Карта id → ключ statCatFilter */
+function tileId(cat) {
+  return 'tile' + cat.charAt(0).toUpperCase() + cat.slice(1);
+}
 
 function escapeHTML(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function isDateExpired(isoDate) { if (!isoDate) return false; var today = new Date(); today.setHours(0,0,0,0); var p = isoDate.split('-'); var d = new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10), 0,0,0,0); return d < today; }
@@ -397,16 +403,54 @@ function resetAllFilters() {
   renderTable();
 }
 
-/* --- Чекбоксы на плашках: снятие и возврат галочки --- */
+/* =============================================
+   Чекбоксы плашек: «С льготой» = Σ(источники)
+   ============================================= */
+
+/* Обновляет чекбокс и визуал одной плашки (без вызова onchange) */
+function syncTile(cat) {
+  var tile = document.getElementById(tileId(cat));
+  var cb = tile.querySelector('input[type="checkbox"]');
+  cb.checked = statCatFilter[cat];
+  if (statCatFilter[cat]) tile.classList.remove('cat-excluded');
+  else tile.classList.add('cat-excluded');
+}
+
+/* Обновляет все 4 плитки-источники */
+function syncSourceTiles() {
+  for (var i = 0; i < SOURCE_CATS.length; i++) syncTile(SOURCE_CATS[i]);
+}
+
+/* Пересчитывает «С льготой» по состоянию источников */
+function recalcLgota() {
+  statCatFilter.lgota = statCatFilter.svo || statCatFilter.mnogodet || statCatFilter.ovz || statCatFilter.maloim;
+  syncTile('lgota');
+}
+
 function toggleStatCat(el) {
   var cat = el.dataset.cat;
   if (cat === 'total') return;
+
   statCatFilter[cat] = el.checked;
   var tile = el.closest('.stat-tile');
-  if (!el.checked) { tile.classList.add('cat-excluded'); }
-  else { tile.classList.remove('cat-excluded'); }
+  if (!el.checked) tile.classList.add('cat-excluded');
+  else tile.classList.remove('cat-excluded');
+
+  if (cat === 'lgota') {
+    /* «С льготой» нажата вручную — мастер-переключатель для всех 4 источников */
+    statCatFilter.svo = el.checked;
+    statCatFilter.mnogodet = el.checked;
+    statCatFilter.ovz = el.checked;
+    statCatFilter.maloim = el.checked;
+    syncSourceTiles();
+  } else {
+    /* Один из источников изменился — «С льготой» пересчитывается автоматически */
+    recalcLgota();
+  }
+
   renderTable();
 }
+
 function resetStatFilters() {
   statCatFilter = { svo: true, mnogodet: true, ovz: true, maloim: true, lgota: true };
   var tiles = document.querySelectorAll('.stat-tile');
@@ -421,11 +465,15 @@ function getFilteredForStats() {
   var result = clients;
   var ck = Object.keys(classFilter); if (ck.length > 0) result = result.filter(function(c) { return ck[c.klass] === true; });
   var lk = Object.keys(letterFilter); if (lk.length > 0) result = result.filter(function(c) { return lk[c.letter] === true; });
+  /* Источники-категории: независимый фильтр для каждого */
   if (!statCatFilter.svo) result = result.filter(function(c) { return c.svo !== 1; });
   if (!statCatFilter.mnogodet) result = result.filter(function(c) { return c.mnogodet !== 1; });
   if (!statCatFilter.ovz) result = result.filter(function(c) { return c.ovz !== 1; });
   if (!statCatFilter.maloim) result = result.filter(function(c) { return c.maloim !== 1; });
-  if (!statCatFilter.lgota) result = result.filter(function(c) { return !(c.ovz === 1 || c.maloim === 1); });
+  /* «С льготой»: исключает всех, у кого есть хотя бы одна включённая категория */
+  if (!statCatFilter.lgota) result = result.filter(function(c) {
+    return !(c.svo === 1 || c.mnogodet === 1 || c.ovz === 1 || c.maloim === 1);
+  });
   return result;
 }
 
@@ -506,13 +554,13 @@ function checkAllDates() {
 function animateStat(id, target, prev) { var el = document.getElementById(id); if (!el) return; if (prev === undefined) prev = 0; var start = prev, diff = target - start; if (diff === 0) { el.textContent = target; return; } var dur = 300, st = performance.now(); function step(now) { var t = Math.min(1, (now - st) / dur), e = 1 - Math.pow(1 - t, 3); el.textContent = Math.round(start + diff * e); if (t < 1) requestAnimationFrame(step); } requestAnimationFrame(step); }
 function updateAllStats() {
   var f = getFilteredForStats(); var total = f.length, svo = 0, mnogodet = 0, ovz = 0, maloim = 0, lgota = 0;
-  for (var i = 0; i < f.length; i++) { if (f[i].svo===1) svo++; if (f[i].mnogodet===1) mnogodet++; if (f[i].ovz===1) ovz++; if (f[i].maloim===1) maloim++; if (f[i].ovz===1||f[i].maloim===1) lgota++; }
+  for (var i = 0; i < f.length; i++) { if (f[i].svo===1) svo++; if (f[i].mnogodet===1) mnogodet++; if (f[i].ovz===1) ovz++; if (f[i].maloim===1) maloim++; if (f[i].svo===1||f[i].mnogodet===1||f[i].ovz===1||f[i].maloim===1) lgota++; }
   animateStat('statTotal', total, _prevStats.total); animateStat('statSvo', svo, _prevStats.svo); animateStat('statMnogodet', mnogodet, _prevStats.mnogodet); animateStat('statOvz', ovz, _prevStats.ovz); animateStat('statMaloim', maloim, _prevStats.maloim); animateStat('statLgota', lgota, _prevStats.lgota);
   _prevStats = { total:total, svo:svo, mnogodet:mnogodet, ovz:ovz, maloim:maloim, lgota:lgota }; updateFormStats();
 }
 function updateFormStats() {
   var total = clients.length, svo = 0, mnogodet = 0, ovz = 0, maloim = 0, lgota = 0;
-  for (var i = 0; i < clients.length; i++) { if (clients[i].svo===1) svo++; if (clients[i].mnogodet===1) mnogodet++; if (clients[i].ovz===1) ovz++; if (clients[i].maloim===1) maloim++; if (clients[i].ovz===1||clients[i].maloim===1) lgota++; }
+  for (var i = 0; i < clients.length; i++) { if (clients[i].svo===1) svo++; if (clients[i].mnogodet===1) mnogodet++; if (clients[i].ovz===1) ovz++; if (clients[i].maloim===1) maloim++; if (clients[i].svo===1||clients[i].mnogodet===1||clients[i].ovz===1||clients[i].maloim===1) lgota++; }
   document.getElementById('fStatTotal').textContent = total; document.getElementById('fStatSvo').textContent = svo; document.getElementById('fStatMnogodet').textContent = mnogodet; document.getElementById('fStatOvz').textContent = ovz; document.getElementById('fStatMaloim').textContent = maloim; document.getElementById('fStatLgota').textContent = lgota;
 }
 
@@ -669,7 +717,7 @@ function exportToExcel() {
   var exportData = getFilteredForStats(); if (exportData.length === 0) { showToast("Нет данных по текущим фильтрам","warn"); return; }
   var rows = [];
   for (var i = 0; i < exportData.length; i++) { var c = exportData[i]; rows.push({ 'Класс':c.klass, 'Буква':c.letter, 'Фамилия':c.surname, 'СВО':c.svo===1?'Да':'Нет', 'Многодетные':c.mnogodet===1?'Да':'Нет', 'ОВЗ':c.ovz===1?'Да':'Нет', 'ОВЗ дата':c.ovzDate?formatDate(c.ovzDate):'', 'Малоимущие':c.maloim===1?'Да':'Нет', 'Малоим дата':c.maloimDate?formatDate(c.maloimDate):'' }); }
-  var ws = XLSX.utils.json_to_sheet(rows); ws['!cols'] = [{wch:8},{wch:8},{wch:30},{wch:6},{wch:14},{wch:6},{wch:14},{wch:14},{wch:14}];
+  var ws = XLSX.utils.json_to_sheet(rows); ws['!cols'] = [{wch:8},{wch:8},{wch:30},{wch:6},{wch:14},{wch:14},{wch:6},{wch:14},{wch:14},{wch:14}];
   var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Ученики');
   XLSX.writeFile(wb, 'Питание_' + new Date().toISOString().split('T')[0] + '.xlsx'); showToast('Выгружено ' + exportData.length + ' записей', 'success');
 }

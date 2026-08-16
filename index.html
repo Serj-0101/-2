@@ -32,8 +32,9 @@ body::after{content:'';position:fixed;bottom:-30%;right:-10%;width:500px;height:
 .stat-tile .stat-num{font-size:32px;font-weight:900;line-height:1;margin-bottom:6px;transition:opacity 0.3s;}
 .stat-tile .stat-label{font-size:12px;color:var(--fg-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;transition:opacity 0.3s;}
 .stat-tile.total .stat-num{color:var(--fg);}.stat-tile.svo .stat-num{color:var(--danger);}.stat-tile.mnogodet .stat-num{color:var(--warn);}.stat-tile.ovz .stat-num{color:var(--purple);}.stat-tile.maloim .stat-num{color:var(--blue);}.stat-tile.lgota .stat-num{color:var(--orange);}
-.stat-tile.cat-excluded{opacity:0.3;pointer-events:none;}
+.stat-tile.cat-excluded{opacity:0.3;}
 .stat-tile.cat-excluded:hover{transform:none;border-color:var(--border);}
+.stat-tile.cat-excluded .stat-cb{opacity:1;}
 
 /* --- Чекбокс на плитке --- */
 .stat-cb{position:absolute;top:7px;right:7px;display:flex;align-items:center;justify-content:center;z-index:2;cursor:pointer;}
